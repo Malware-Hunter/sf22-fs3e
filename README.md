@@ -13,6 +13,17 @@ Primeiras ideias:
 - o arquivo de saída para as métricas dos modelos de ML RF e SVM;
 (6) a ferramenta poderá também gerar automaticamente gráficos ou tabelas das saídas dos modelos RF e SVM;
 
+Exemplos de parâmetros e execução:
+
+tool.py --list-fs-methods --list-ml-models
+
+tool.py --run-fs-rfg --run-fs-sigapi --run-ml-rf --run-ml-svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all --dataset motodroid.csv 
+
+tool.py --run-fs-all --run-ml-all --plot-graph-all --datasets motodroid.csv androcrawl.csv drebin215.csv
+
+tool.py --run-fs-all --run-ml-all --plot-graph-all --datasets-all
+
+
 ###### methods
 Códigos dos métodos.
 
