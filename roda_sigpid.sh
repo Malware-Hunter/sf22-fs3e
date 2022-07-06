@@ -7,7 +7,8 @@ CHECK_PKGS=`pip show ${PKGS[@]} | grep -i -w "not found"`
 
 bash setup_datasets.sh
 [[ $? != 0 ]] && exit 1
-for DATASET in datasets/*.csv
+[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+for DATASET in $*
 do
     D_NAME=$(echo $DATASET | cut -d"/" -f2)
     echo "python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME"

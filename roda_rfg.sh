@@ -35,7 +35,8 @@ set_increment(){
     INCREMENT=200
 }
 
-for DATASET in datasets/*.csv
+[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+for DATASET in $*
 do
     TOTAL_N_FEATURES=`head -1 "$DATASET" | awk -F, '{print NF}'`
     [[ $TOTAL_N_FEATURES -gt $MAX_N_FEATURES ]] && N_FEATURES=$MAX_N_FEATURES || N_FEATURES=`expr $TOTAL_N_FEATURES - 1`

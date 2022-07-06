@@ -13,7 +13,8 @@ roda_dataset() {
 
 bash setup_datasets.sh
 [[ $? != 0 ]] && exit 1
-for DATASET in datasets/*.csv
+[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+for DATASET in $*
 do
     roda_dataset $DATASET
 done
