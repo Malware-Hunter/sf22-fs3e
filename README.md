@@ -9,7 +9,7 @@ Primeiras ideias:
 4. A ferramenta irá apresentar o resultado das métricas dos modelos;
 5. A ferramenta deve permitir especificar: 
 - o dataset de entrada;
-- o prefixo do arquivo do dataset de saída de cada modelo de seleção;
+- o prefixo do arquivo do dataset de saída de cada método de seleção;
 - o arquivo de saída para as métricas dos modelos de ML RF e SVM;
 
 6. A ferramenta poderá também gerar automaticamente gráficos ou tabelas das saídas dos modelos RF e SVM;
