@@ -70,73 +70,73 @@ if __name__=="__main__":
     x = (args.dataset).split("/")
     df.to_csv(args.classifier+ "_output_" + x[-1], index = False)
     print(df)
-    (if args.classifier == 'both':) 
-        print("MODELO SVM")
-        clf = svm.SVC()
-        print('Fit Model')
-        start_time = timeit.default_timer()
-        clf.fit(X, y)
-        end_time = timeit.default_timer()
-        print("Elapsed Time:", end_time - start_time)
+    if args.classifier == 'both': 
+            print("MODELO SVM")
+            clf = svm.SVC()
+            print('Fit Model')
+            start_time = timeit.default_timer()
+            clf.fit(X, y)
+            end_time = timeit.default_timer()
+            print("Elapsed Time:", end_time - start_time)
 
-        print('Predict')
-        start_time = timeit.default_timer()
-        pred = clf.predict(X)
-        end_time = timeit.default_timer()
-        print("Elapsed Time:", end_time - start_time)
-
-
-        tn, fp, fn, tp = confusion_matrix(y, pred).ravel()
-        accuracy = metrics.accuracy_score(y, pred)
-        precision = metrics.precision_score(y, pred, zero_division = 0)
-        recall = metrics.recall_score(y, pred, zero_division = 0)
-        f1_score = metrics.f1_score(y, pred, zero_division = 0)
-        roc_auc = metrics.roc_auc_score(y, pred)
-
-        precision *= 100.0
-        accuracy *= 100.0
-        recall *= 100.0
-        f1_score *= 100.0
-        roc_auc *= 100.0
-
-        data = [{'Accuracy':accuracy,'Precision':precision,'Recall':recall,'F1_Score':f1_score,'RoC_AuC':roc_auc}]
-        df = pd.DataFrame(data)
-
-        df.to_csv('SVM.csv', encoding='utf-8', index=False)
-        print(df)
-
-        print("MODELO RANDOMFOREST")
-
-        
-        clf = RandomForestClassifier(random_state = 0)
-        print('Fit Model')
-        start_time = timeit.default_timer()
-        clf.fit(X, y)
-        end_time = timeit.default_timer()
-        print("Elapsed Time:", end_time - start_time)
-
-        print('Predict')
-        start_time = timeit.default_timer()
-        pred = clf.predict(X)
-        end_time = timeit.default_timer()
-        print("Elapsed Time:", end_time - start_time)
+            print('Predict')
+            start_time = timeit.default_timer()
+            pred = clf.predict(X)
+            end_time = timeit.default_timer()
+            print("Elapsed Time:", end_time - start_time)
 
 
-        tn, fp, fn, tp = confusion_matrix(y, pred).ravel()
-        accuracy = metrics.accuracy_score(y, pred)
-        precision = metrics.precision_score(y, pred, zero_division = 0)
-        recall = metrics.recall_score(y, pred, zero_division = 0)
-        f1_score = metrics.f1_score(y, pred, zero_division = 0)
-        roc_auc = metrics.roc_auc_score(y, pred)
+            tn, fp, fn, tp = confusion_matrix(y, pred).ravel()
+            accuracy = metrics.accuracy_score(y, pred)
+            precision = metrics.precision_score(y, pred, zero_division = 0)
+            recall = metrics.recall_score(y, pred, zero_division = 0)
+            f1_score = metrics.f1_score(y, pred, zero_division = 0)
+            roc_auc = metrics.roc_auc_score(y, pred)
 
-        precision *= 100.0
-        accuracy *= 100.0
-        recall *= 100.0
-        f1_score *= 100.0
-        roc_auc *= 100.0
+            precision *= 100.0
+            accuracy *= 100.0
+            recall *= 100.0
+            f1_score *= 100.0
+            roc_auc *= 100.0
 
-        data = [{'Accuracy':accuracy,'Precision':precision,'Recall':recall,'F1_Score':f1_score,'RoC_AuC':roc_auc}]
-        df = pd.DataFrame(data)
+            data = [{'Accuracy':accuracy,'Precision':precision,'Recall':recall,'F1_Score':f1_score,'RoC_AuC':roc_auc}]
+            df = pd.DataFrame(data)
 
-        df.to_csv('RF.csv', encoding='utf-8', index=False)
-        print(df)
+            df.to_csv('SVM.csv', encoding='utf-8', index=False)
+            print(df)
+
+            print("MODELO RANDOMFOREST")
+
+
+            clf = RandomForestClassifier(random_state = 0)
+            print('Fit Model')
+            start_time = timeit.default_timer()
+            clf.fit(X, y)
+            end_time = timeit.default_timer()
+            print("Elapsed Time:", end_time - start_time)
+
+            print('Predict')
+            start_time = timeit.default_timer()
+            pred = clf.predict(X)
+            end_time = timeit.default_timer()
+            print("Elapsed Time:", end_time - start_time)
+
+
+            tn, fp, fn, tp = confusion_matrix(y, pred).ravel()
+            accuracy = metrics.accuracy_score(y, pred)
+            precision = metrics.precision_score(y, pred, zero_division = 0)
+            recall = metrics.recall_score(y, pred, zero_division = 0)
+            f1_score = metrics.f1_score(y, pred, zero_division = 0)
+            roc_auc = metrics.roc_auc_score(y, pred)
+
+            precision *= 100.0
+            accuracy *= 100.0
+            recall *= 100.0
+            f1_score *= 100.0
+            roc_auc *= 100.0
+
+            data = [{'Accuracy':accuracy,'Precision':precision,'Recall':recall,'F1_Score':f1_score,'RoC_AuC':roc_auc}]
+            df = pd.DataFrame(data)
+
+            df.to_csv('RF.csv', encoding='utf-8', index=False)
+            print(df)
