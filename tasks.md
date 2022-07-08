@@ -10,6 +10,8 @@
     - Definir os parâmetros obrigatórios
     - Definir os parâmetros opcionais
 
+- Usar a mesma interface do utils.py no `evaluation.py`
+    - Queremos que o `evaluation.py` use o parser e a função `get_X_y(...)` do utils.py. Isso é importante para mantermos o padrão dos métodos de seleção também no script de avaliação de modelos.
 
 ## Tarefas realizadas
 - (Luiza) Refatorar `executa_modelos_RFeSVM.py` para rodar opcionalmente os dois modelos SVM e RF
