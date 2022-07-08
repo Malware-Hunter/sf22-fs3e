@@ -18,7 +18,7 @@ def parse_args(argv):
         '-c', '--classifier', metavar='str',
         help="Classifier.",
         choices=['svm', 'rf','both'],
-        type=str, default='svm')
+        type=str, default='both')
     args = parser.parse_args(argv)
     return args
 
