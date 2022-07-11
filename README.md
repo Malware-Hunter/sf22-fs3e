@@ -17,13 +17,15 @@ Primeiras ideias:
 Exemplos de parâmetros e execução:
 
 ```bash
-tool.py --list-fs-methods --list-ml-models
+tool.py list --methods
+tool.py list --models
+tool.py list
 
-tool.py --run-fs-rfg --run-fs-sigapi --run-ml-rf --run-ml-svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all --dataset motodroid.csv 
+tool.py run --fs-rfg --fs-sigapi --ml-rf --ml-svm --output-prefix resultados --plot-graph-all -d datasets/*.csv 
 
-tool.py --run-fs-all --run-ml-all --plot-graph-all --datasets motodroid.csv androcrawl.csv drebin215.csv
+tool.py run --fs-rfg --fs-sigapi --ml-rf --ml-svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all -d motodroid.csv 
 
-tool.py --run-fs-all --run-ml-all --plot-graph-all --datasets-all
+tool.py run --fs-all --ml-all --plot-graph-all -d motodroid.csv androcrawl.csv drebin215.csv
 ```
 
 ###### methods
