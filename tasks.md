@@ -13,12 +13,9 @@
 - Usar a mesma interface do utils.py no `evaluation.py`
     - Queremos que o `evaluation.py` use o parser e a função `get_X_y(...)` do utils.py. Isso é importante para mantermos o padrão dos métodos de seleção também no script de avaliação de modelos.
 
-- (Estevão) Separar build de execução no RFG (e pros outros scripts)
-
-
 - Usar underlines ("\_") nos arquivos de saída dos métodos
     - (Estevão) Verificar os scripts `roda_<método>.sh`
-    - (Luíza, Sávio) Verificar para os códigos python de cada método
+    - (Luíza, Sávio) Verificar os códigos python de cada método
 
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID 
