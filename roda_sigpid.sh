@@ -13,5 +13,5 @@ do
     D_NAME=$(echo $DATASET | cut -d"/" -f2)
     echo "python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME"
     TS=$(date +%Y%m%d%H%M%S)
-    { time python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME; } 2> time-sigpid-$D_NAME-$TS.txt
+    { time python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME; } 2> time_sigpid_${D_NAME}_$TS.txt
 done

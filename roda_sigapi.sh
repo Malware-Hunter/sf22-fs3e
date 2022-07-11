@@ -27,5 +27,5 @@ for DATASET in $*
 do
     D_NAME=$(echo $DATASET | cut -d"/" -f2)
     TS=$(date +%Y%m%d%H%M%S)
-    { time sigapi $DATASET $D_NAME; } 2> time-sigapi-$D_NAME-$TS.txt
+    { time sigapi $DATASET $D_NAME; } 2> time_sigapi_${D_NAME}_$TS.txt
 done
