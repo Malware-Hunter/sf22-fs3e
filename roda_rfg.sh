@@ -15,9 +15,8 @@ set_increment(){
 [[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
 for DATASET in $*
 do
-    TOTAL_N_FEATURES=`head -1 "$DATASET" | awk -F, '{print NF}'`
-    [[ $TOTAL_N_FEATURES -gt $MAX_N_FEATURES ]] && N_FEATURES=$MAX_N_FEATURES || N_FEATURES=`expr $TOTAL_N_FEATURES - 1`
-    D_NAME=$(echo $DATASET | cut -d"/" -f2)
+    TOTAL_N_FEATURES=`head -1 "$DATASET" | awk -F, '{print NF-1}'`
+    D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     set_increment $TOTAL_N_FEATURES
     TS=$(date +%Y%m%d%H%M%S)
     echo  "python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $D_NAME"

@@ -25,7 +25,7 @@ bash setup_datasets.sh
 [[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
 for DATASET in $*
 do
-    D_NAME=$(echo $DATASET | cut -d"/" -f2)
+    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
     TS=$(date +%Y%m%d%H%M%S)
     { time sigapi $DATASET $D_NAME; } 2> time_sigapi_${D_NAME}_$TS.txt
 done

@@ -11,7 +11,7 @@ bash setup_datasets.sh
 for DATASET in $*
 do
     echo "python3 -m methods.SigAPI.sigapi_funcoesdeselecao -d $DATASET"
-    D_NAME=$(echo $DATASET | cut -d"/" -f2)
+    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
     TS=$(date +%Y%m%d%H%M%S)
     { time python3 -m methods.LinearRegression.LinearRegression -d $DATASET --output-file linear_regression_$D_NAME; } 2> time_LR_${D_NAME}_$TS.txt
 done

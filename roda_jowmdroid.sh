@@ -6,7 +6,7 @@ CHECK_PKGS=$(pip show numpy scipy pandas scikit-learn | grep -i -w "not found")
 
 roda_dataset() {
     DATASET=$1
-    D_NAME=$(echo $DATASET | cut -d"/" -f2)
+    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
     echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o jowmdroid_$D_NAME --feature-selection-only --exclude-hyperparameter"
     python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o jowmdroid_$D_NAME --feature-selection-only --exclude-hyperparameter
 }

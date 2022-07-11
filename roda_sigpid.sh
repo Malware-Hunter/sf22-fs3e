@@ -10,7 +10,7 @@ bash setup_datasets.sh
 [[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
 for DATASET in $*
 do
-    D_NAME=$(echo $DATASET | cut -d"/" -f2)
+    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
     echo "python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME"
     TS=$(date +%Y%m%d%H%M%S)
     { time python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME; } 2> time_sigpid_${D_NAME}_$TS.txt
