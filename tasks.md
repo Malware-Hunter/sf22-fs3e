@@ -2,7 +2,7 @@
 
 ## Equipe
 
-- Estevão, Sávio, Luiza, Diego
+- Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
 - Definir a interface de linha de comando (CLI) do `moto_suite`:
@@ -15,7 +15,10 @@
 
 - (Estevão) Separar build de execução no RFG (e pros outros scripts)
 
-- (Estevão) Remover dependências do Java e Weka no RFG
+
+- Usar underlines ("\_") nos arquivos de saída dos métodos
+    - (Estevão) Verificar os scripts `roda_<método>.sh`
+    - (Luíza, Sávio) Verificar para os códigos python de cada método
 
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID 
@@ -25,6 +28,8 @@
     - Lembrando de colocar como parâmetro de linha de comando o valor de k, que representada o número de folds (definido como 10 por padrão)
 
 ## Tarefas realizadas
+- (Estevão) Atualizar dependências do RFG
+    -  Remover dependências não utilizadas (Java, LogitBoost e etc), manter somente o Random Forest
 - (Luiza) Refatorar `executa_modelos_RFeSVM.py` para rodar opcionalmente os dois modelos SVM e RF
     - Atualmente, o código executa ou o SVM ou o RF, mas é necessário fazer com que ele seja capaz de rodar os dois e não apenas um.
 - (Estevão) Refatorar demais scripts `roda_<metodo>.sh` conforme o `roda_sigapi.sh` para receber datasets por linha de comando.
