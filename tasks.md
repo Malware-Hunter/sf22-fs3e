@@ -1,5 +1,10 @@
 # líder da FT: Estevão
 
+**CONVENÇÕES IMPORTANTES**: 
+
+- Sempre que possível, criar tarefas atômicas (independente e pequena, significando que ela se refere a uma única coisa) e possíveis de serem resolvidas em até um dia;
+- Mensagens de commit devem ser escritas em Português.
+
 ## Equipe
 
 - Estevão, Sávio, Luiza, Diego, Nicolas
@@ -17,6 +22,7 @@
 - (Luíza) Fazer validação cruzada 10 fold no `evaluation.py`
     - Atualmente, o mesmo conjunto de amostras é usado no treino e na validação, mas queremos que ele use amostras diferentes no treino. Por isso a validação cruzada 10
     - Lembrando de colocar como parâmetro de linha de comando o valor de k, que representada o número de folds (definido como 10 por padrão)
+    - (Estevão) revisão realizada
 - (Estevão) `tool.py`: implementar opção que lista métodos e/ou modelos disponíveis
 - (Estevão) Implementar a estrutura inicial do `tool.py`
 - (Estevão) Usar "_" nos arquivos de saída dos scripts `roda_<método>.sh`
