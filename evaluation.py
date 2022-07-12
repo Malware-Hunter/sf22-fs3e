@@ -8,6 +8,8 @@ import timeit
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_score, cross_validate
+from sklearn.model_selection import train_test_split
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -19,9 +21,7 @@ def parse_args(argv):
         help="Classifier.",
         choices=['svm', 'rf','both'],
         type=str, default='both')
-     parser.add_argument('--train-size', type = float, default = 0.8, 
-        help = 'Proportion of samples to use for train. Default: 0.8')
-     parser.add_argument('--cv', metavar = 'INT', type = int, default = 10,
+    parser.add_argument('--cv', '--k_fold',metavar = 'INT', type = int, default = 10,
         help="Number of folds to use in cross validation. Default: 10")
     args = parser.parse_args(argv)
     return args
@@ -32,6 +32,49 @@ def get_classifiers(classifier_name):
     elif(classifier_name == 'rf'):
         return {'rf': RandomForestClassifier(random_state = 0)}
     return {'svm': svm.SVC(), 'rf': RandomForestClassifier(random_state = 0)}
+
+def cross_validation(model, _X, _y, _cv = args.k_fold):
+      '''Function to perform K Folds Cross-Validation
+       Parameters
+       ----------
+      model: Python Class, default=None
+              This is the machine learning algorithm to be used for training.
+      _X: array
+           This is the matrix of features.
+      _y: array
+           This is the target variable.
+      _cv: int, default=5
+          Determines the number of folds for cross-validation.
+       Returns
+       -------
+       The function returns a dictionary containing the metrics 'accuracy', 'precision',
+       'recall', 'f1' for both training set and validation set.
+      '''
+      _scoring = ['accuracy', 'precision', 'recall', 'f1']
+      results = cross_validate(estimator=model,
+                               X=_X,
+                               y=_y,
+                               cv=_cv,
+                               scoring=_scoring,
+                               return_train_score=True)
+      
+      return {"Training Accuracy scores": results['train_accuracy'],
+              "Mean Training Accuracy": results['train_accuracy'].mean()*100,
+              "Training Precision scores": results['train_precision'],
+              "Mean Training Precision": results['train_precision'].mean()*100,
+              "Training Recall scores": results['train_recall'],
+              "Mean Training Recall": results['train_recall'].mean()*100,
+              "Training F1 scores": results['train_f1'],
+              "Mean Training F1 Score": results['train_f1'].mean()*100,
+              "Validation Accuracy scores": results['test_accuracy'],
+              "Mean Validation Accuracy": results['test_accuracy'].mean()*100,
+              "Validation Precision scores": results['test_precision'],
+              "Mean Validation Precision": results['test_precision'].mean()*100,
+              "Validation Recall scores": results['test_recall'],
+              "Mean Validation Recall": results['test_recall'].mean()*100,
+              "Validation F1 scores": results['test_f1'],
+              "Mean Validation F1 Score": results['test_f1'].mean()*100
+              }
 
 if __name__=="__main__":
     args = parse_args(sys.argv[1:])
@@ -46,11 +89,13 @@ if __name__=="__main__":
     y = dataset.iloc[:,-1] # class
 
     classifiers = get_classifiers(args.classifier)
+    
+    cross_validation(model = classifiers, _X, _y, _cv = args.k_fold)
 
     for classifier_name, clf in classifiers.items():
         print('Fit Model', classifier_name)
         start_time = timeit.default_timer()
-        clf.fit(X, y)
+        clf.fit(X,y)
         end_time = timeit.default_timer()
         print("Elapsed Time:", end_time - start_time)
 
