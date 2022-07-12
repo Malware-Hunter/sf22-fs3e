@@ -19,6 +19,10 @@ def parse_args(argv):
         help="Classifier.",
         choices=['svm', 'rf','both'],
         type=str, default='both')
+     parser.add_argument('--train-size', type = float, default = 0.8, 
+        help = 'Proportion of samples to use for train. Default: 0.8')
+     parser.add_argument('--cv', metavar = 'INT', type = int, default = 10,
+        help="Number of folds to use in cross validation. Default: 10")
     args = parser.parse_args(argv)
     return args
 
