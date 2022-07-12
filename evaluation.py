@@ -28,34 +28,12 @@ def get_classifiers(classifier_name):
         return {'rf': RandomForestClassifier(random_state = 0)}
     return {'svm': svm.SVC(), 'rf': RandomForestClassifier(random_state = 0)}
 
-def cross_validation(model, _X, _y, _cv = args.k_fold):
-      '''Function to perform K Folds Cross-Validation
-      '''
-      _scoring = ['accuracy', 'precision', 'recall', 'f1']
-      results = cross_validate(estimator=model,
-                               X=_X,
-                               y=_y,
-                               cv=_cv,
-                               scoring=_scoring,
-                               return_train_score=True)
-      
-      return {"Training Accuracy scores": results['train_accuracy'],
-              "Mean Training Accuracy": results['train_accuracy'].mean()*100,
-              "Training Precision scores": results['train_precision'],
-              "Mean Training Precision": results['train_precision'].mean()*100,
-              "Training Recall scores": results['train_recall'],
-              "Mean Training Recall": results['train_recall'].mean()*100,
-              "Training F1 scores": results['train_f1'],
-              "Mean Training F1 Score": results['train_f1'].mean()*100,
-              "Validation Accuracy scores": results['test_accuracy'],
-              "Mean Validation Accuracy": results['test_accuracy'].mean()*100,
-              "Validation Precision scores": results['test_precision'],
-              "Mean Validation Precision": results['test_precision'].mean()*100,
-              "Validation Recall scores": results['test_recall'],
-              "Mean Validation Recall": results['test_recall'].mean()*100,
-              "Validation F1 scores": results['test_f1'],
-              "Mean Validation F1 Score": results['test_f1'].mean()*100
-              }
+def cross_validation(model, X, y, n_folds = 10, metrics=['accuracy', 'precision', 'recall', 'f1', 'roc_auc']):
+    results = cross_validate(estimator=model, X=X, y=y, cv=n_folds, scoring=metrics)
+    metrics_results = {}
+    for metric in metrics:
+        metrics_results[metric] = results[f'test_{metric}'].mean() * 100
+    return metrics_results
 
 if __name__=="__main__":
     args = parse_args(sys.argv[1:])
