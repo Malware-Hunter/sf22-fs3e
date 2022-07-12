@@ -35,20 +35,6 @@ def get_classifiers(classifier_name):
 
 def cross_validation(model, _X, _y, _cv = args.k_fold):
       '''Function to perform K Folds Cross-Validation
-       Parameters
-       ----------
-      model: Python Class, default=None
-              This is the machine learning algorithm to be used for training.
-      _X: array
-           This is the matrix of features.
-      _y: array
-           This is the target variable.
-      _cv: int, default=5
-          Determines the number of folds for cross-validation.
-       Returns
-       -------
-       The function returns a dictionary containing the metrics 'accuracy', 'precision',
-       'recall', 'f1' for both training set and validation set.
       '''
       _scoring = ['accuracy', 'precision', 'recall', 'f1']
       results = cross_validate(estimator=model,
