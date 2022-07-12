@@ -15,6 +15,9 @@
     - Atualmente, o mesmo conjunto de amostras é usado no treino e na validação, mas queremos que ele use amostras diferentes no treino. Por isso a validação cruzada 10
     - Lembrando de colocar como parâmetro de linha de comando o valor de k, que representada o número de folds (definido como 10 por padrão)
 
+- (Estevão) `tool.py`: implementar opção que executa métodos de feature selection
+- (Estevão) `tool.py`: implementar opção que executa modelos de ML
+
 ## Tarefas realizadas
 - (Estevão) `tool.py`: implementar opção que lista métodos e/ou modelos disponíveis
 - (Estevão) Implementar a estrutura inicial do `tool.py`
