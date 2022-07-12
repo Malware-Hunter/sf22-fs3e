@@ -1,15 +1,10 @@
 from sklearn import svm
 import sys
-import os
 import argparse
-import numpy as np
 import pandas as pd
-import timeit
-from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import cross_val_score, cross_validate
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_validate
+from methods.utils import get_dataset, get_base_parser, get_X_y
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
