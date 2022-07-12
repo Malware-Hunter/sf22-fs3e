@@ -16,6 +16,7 @@
     - Lembrando de colocar como parâmetro de linha de comando o valor de k, que representada o número de folds (definido como 10 por padrão)
 
 ## Tarefas realizadas
+- (Estevão) `tool.py`: implementar opção que lista métodos e/ou modelos disponíveis
 - (Estevão) Implementar a estrutura inicial do `tool.py`
 - (Estevão) Usar "_" nos arquivos de saída dos scripts `roda_<método>.sh`
 - (Estevão) Usar a mesma interface do utils.py no `evaluation.py`
