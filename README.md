@@ -19,13 +19,14 @@ Exemplos de parâmetros e execução:
 ```bash
 tool.py list --methods
 tool.py list --models
-tool.py list
+tool.py list --all
 
-tool.py run --fs-rfg --fs-sigapi --ml-rf --ml-svm --output-prefix resultados --plot-graph-all -d datasets/*.csv 
+tool.py run --fs-methods rfg sigapi --ml-models rf --output-prefix resultados --plot-graph-all -d datasets/*.csv
 
-tool.py run --fs-rfg --fs-sigapi --ml-rf --ml-svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all -d motodroid.csv 
+tool.py run --fs-methods sigapi --ml-models rf svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all -d motodroid.csv 
 
-tool.py run --fs-all --ml-all --plot-graph-all -d motodroid.csv androcrawl.csv drebin215.csv
+tool.py run --fs-methods all --ml-models all --plot-graph-all -d motodroid.csv androcrawl.csv drebin215.csv
+tool.py run -d motodroid.csv
 ```
 
 ###### methods
