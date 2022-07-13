@@ -16,6 +16,7 @@
 - (Estevão) `tool.py`: implementar opção que executa modelos de ML
 
 ## Tarefas realizadas
+- (Estevão) `tool.py`: fazer parsing das opções do comando run
 - (Luíza) Fazer validação cruzada 10 fold no `evaluation.py`
     - Atualmente, o mesmo conjunto de amostras é usado no treino e na validação, mas queremos que ele use amostras diferentes no treino. Por isso a validação cruzada 10
     - Lembrando de colocar como parâmetro de linha de comando o valor de k, que representada o número de folds (definido como 10 por padrão)
