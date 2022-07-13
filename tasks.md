@@ -10,9 +10,6 @@
 - Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
-- (Sávio) Usar underlines ("\_") nos arquivos de saída dos métodos
-    - Verificar os códigos python de cada método
-
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
 - (Estevão) `tool.py`: implementar opção que executa métodos de feature selection
@@ -37,3 +34,5 @@
     - Vamos usar os _shell scripts_ `roda_<metodo>.sh`? Resposta: sim, pois eles também instalam dependências das ferramentas
 - planejar as primeiras atividades;
 - definir o time de trabalho;
+- (Sávio) Usar underlines ("\_") nos arquivos de saída dos métodos
+    - Verificar os códigos python de cada método
