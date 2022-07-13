@@ -9,23 +9,25 @@ ml_models = ['svm', 'rf']
 
 def parse_args():
     base_parser = get_base_parser()
-    parser = ArgumentParser(description="Suite de métodos de seleção de características e de validação com algoritmos de Machine Learning")
-    subparsers = parser.add_subparsers(title='Comandos disponíveis', dest="command")
+    parser = ArgumentParser(description="Suite to run feature selection (FS) methods and evaluation of machine learning (ML) algorithms")
+    subparsers = parser.add_subparsers(title='Available commands', dest="command")
 
-    list_parser = subparsers.add_parser('list')
+    list_parser = subparsers.add_parser('list', help='List available feature selection methods and/or machine learning models')
     list_group = list_parser.add_mutually_exclusive_group(required=True)
     list_group.add_argument("--all", action='store_true')
     list_group.add_argument("--fs-methods", action='store_true')
     list_group.add_argument("--ml-models", action='store_true')
 
-    run_parser = subparsers.add_parser("run", parents=[base_parser])
+    run_parser = subparsers.add_parser("run", parents=[base_parser], help='Run experiment with feature selection methods and ML models')
+    run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include', choices=fs_methods + ['all'], nargs='*', default='all')
+    run_parser.add_argument(f'--ml-models', help=f'Machine learning models to include', choices=ml_models + ['all'], nargs='*', default='all')
 
     args = parser.parse_args(sys.argv[1:])
     return args
 
 def run_command(parsed_args):
+    print(parsed_args)
     X, y = get_X_y(parsed_args, get_dataset(parsed_args))
-    print(X, y)
 
 def list_command(parsed_args):
     if(parsed_args.fs_methods):
