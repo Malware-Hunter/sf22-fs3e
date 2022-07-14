@@ -12,10 +12,10 @@
 ## Tarefas pendentes
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
-- (Estevão) `tool.py`: implementar opção que executa métodos de feature selection
 - (Estevão) `tool.py`: implementar opção que executa modelos de ML
 
 ## Tarefas realizadas
+- (Estevão) `tool.py`: implementar opção que executa métodos de feature selection usando os shell scripts
 - (Estevão) `tool.py`: fazer parsing das opções do comando run
 - (Luíza) Fazer validação cruzada 10 fold no `evaluation.py`
     - Atualmente, o mesmo conjunto de amostras é usado no treino e na validação, mas queremos que ele use amostras diferentes no treino. Por isso a validação cruzada 10
