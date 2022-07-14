@@ -185,7 +185,7 @@ if __name__ == "__main__":
         print("AVISO: 0 features selecionadas")
     features_dataset = X
     features_dataset['class'] = y
-    features_dataset.to_csv(f"selected-features-{parsed_args.output_file}.csv", index = False)
+    features_dataset.to_csv(f"selected_features_{parsed_args.output_file}.csv", index = False)
     if(parsed_args.feature_selection_only):
         print("Selected Features >>", features_dataset.shape[1]-1, "of", init_size)
         exit(0)
