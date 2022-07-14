@@ -7,11 +7,13 @@ CHECK_PKGS=`pip show ${PKGS[@]} | grep -i -w "not found"`
 
 bash setup_datasets.sh
 [[ $? != 0 ]] && exit 1
-[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+[[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
+OUTPUT_FILE=$1
+shift
 for DATASET in $*
 do
     D_NAME=$(echo $DATASET | awk -F, '{print NF}')
-    echo "python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME"
     TS=$(date +%Y%m%d%H%M%S)
-    { time python3 -m methods.SigPID.sigpid -d $DATASET -o resultado_sigpid_$D_NAME; } 2> time_sigpid_${D_NAME}_$TS.txt
+    echo "python3 -m methods.SigPID.sigpid -d $DATASET -o $OUTPUT_FILE"
+    { time python3 -m methods.SigPID.sigpid -d $DATASET -o $OUTPUT_FILE; } 2> time_sigpid_${D_NAME}_$TS.txt
 done

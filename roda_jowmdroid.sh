@@ -4,17 +4,14 @@ CHECK_ZIP=$(which unzip)
 CHECK_PKGS=$(pip show numpy scipy pandas scikit-learn | grep -i -w "not found")
 [ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install numpy scikit-learn scipy pandas"; exit; }
 
-roda_dataset() {
-    DATASET=$1
-    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
-    echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o jowmdroid_$D_NAME --feature-selection-only --exclude-hyperparameter"
-    python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o jowmdroid_$D_NAME --feature-selection-only --exclude-hyperparameter
-}
-
 bash setup_datasets.sh
 [[ $? != 0 ]] && exit 1
-[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+[[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
+OUTPUT_FILE=$1
+shift
 for DATASET in $*
 do
-    roda_dataset $DATASET
+    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
+    echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUTPUT_FILE --feature-selection-only --exclude-hyperparameter"
+    python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUTPUT_FILE --feature-selection-only --exclude-hyperparameter
 done

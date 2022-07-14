@@ -15,17 +15,18 @@ set_increment(){
 sigapi(){
     DATASET=$1
     D_NAME=$2
-    set_increment `head -1 $DATASET | awk -F, '{print NF-1}'`
-    echo "python3 -m methods.SigAPI.main -d $DATASET -o resultado-selecao-$D_NAME -i $INCREMENT"
-    python3 -m methods.SigAPI.main -d $DATASET -o resultado-selecao-$D_NAME -i $INCREMENT
 }
 
 bash setup_datasets.sh
 [[ $? != 0 ]] && exit 1
-[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+[[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
+OUTPUT_FILE=$1
+shift
 for DATASET in $*
 do
     D_NAME=$(echo $DATASET | awk -F, '{print NF}')
+    set_increment `head -1 $DATASET | awk -F, '{print NF-1}'`
     TS=$(date +%Y%m%d%H%M%S)
-    { time sigapi $DATASET $D_NAME; } 2> time_sigapi_${D_NAME}_$TS.txt
+    echo "python3 -m methods.SigAPI.main -d $DATASET -o resultado-selecao-$D_NAME -i $INCREMENT"
+    { time python3 -m methods.SigAPI.main -d $DATASET -o resultado-selecao-$D_NAME -i $INCREMENT; } 2> time_sigapi_${D_NAME}_$TS.txt
 done
