@@ -10,10 +10,11 @@
 - Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
+- (Estevão) RFG: Automatizar escolha do melhor dataset de features selecionadas
+- (Estevão) mover os shells scripts `roda_<metodo>.sh` para o diretório respectivo de cada método
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
 - (Estevão) `tool.py`: implementar opção que executa modelos de ML
-
 ## Tarefas realizadas
 - (Estevão) Corrigir nomes dos arquivos de saída nos métodos
     - O objetivo é fazer com que o dataset de features selecionadas seja exportado com o nome passado como parâmetro, ao passo que outros arquivos de saída tenham o nome sufixado com alguma coisa para diferenciar
