@@ -5,8 +5,6 @@ PKGS=(pandas numpy scikit-learn)
 CHECK_PKGS=`pip show ${PKGS[@]} | grep -i -w "not found"`
 [ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install ${PKGS[@]}"; exit; }
 
-bash setup_datasets.sh
-[[ $? != 0 ]] && exit 1
 [[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
 
 for DATASET in $*

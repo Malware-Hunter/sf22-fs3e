@@ -4,8 +4,6 @@ CHECK_ZIP=$(which unzip)
 CHECK_PKGS=$(pip show numpy scipy pandas scikit-learn | grep -i -w "not found")
 [ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install numpy scikit-learn scipy pandas"; exit; }
 
-bash setup_datasets.sh
-[[ $? != 0 ]] && exit 1
 [[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
 OUTPUT_FILE=$1
 shift

@@ -17,8 +17,6 @@ sigapi(){
     D_NAME=$2
 }
 
-bash setup_datasets.sh
-[[ $? != 0 ]] && exit 1
 [[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
 OUTPUT_FILE=$1
 shift
