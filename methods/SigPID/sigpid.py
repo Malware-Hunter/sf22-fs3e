@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from mlxtend.frequent_patterns import apriori, association_rules
 from mlxtend.preprocessing import TransactionEncoder
 from methods.SigPID.spinner import Spinner
-from methods.utils import get_base_parser, get_dataset
+from methods.utils import get_base_parser, get_dataset, get_filename
 
 
 B = None
@@ -290,8 +290,7 @@ if __name__=="__main__":
     SPR_df = pd.read_csv("MLDP/SPR/subset_" + str(best_SPR_counter) + ".csv", encoding = 'utf8')
     final_dataset = run_PMAR(SPR_df, malwares_permissions, args.class_column)
 
-    #final_dataset.to_csv("MLDP/PMAR/final_dataset.csv", index=False)
-    final_dataset.to_csv(args.output_file, index=False)
+    final_dataset.to_csv(get_filename(args.output_file), index=False)
     final_perms = len(final_dataset.columns) - 1
     num_permissions = initial_dataset.shape[1] - 1
     pct = (1.0 - (final_perms/num_permissions)) * 100.0

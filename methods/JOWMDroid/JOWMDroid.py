@@ -13,7 +13,7 @@ import timeit
 import argparse
 import sys
 import inspect
-from methods.utils import get_base_parser, get_dataset, get_X_y
+from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 
 def parse_args():
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         print("AVISO: 0 features selecionadas")
     features_dataset = X
     features_dataset['class'] = y
-    features_dataset.to_csv(f"selected_features_{parsed_args.output_file}.csv", index = False)
+    features_dataset.to_csv(get_filename(parsed_args.output_file), index = False)
     if(parsed_args.feature_selection_only):
         print("Selected Features >>", features_dataset.shape[1]-1, "of", init_size)
         exit(0)
@@ -206,4 +206,4 @@ if __name__ == "__main__":
                             mapping_functions, cv=parsed_args.cv, train_size=parsed_args.train_size,
                             include_hyperparameter = not parsed_args.exclude_hyperparameter)
 
-    results.to_csv(parsed_args.output_file, index = False)
+    results.to_csv(get_filename(parsed_args.output_file, suffix='evaluation_results'), index = False)

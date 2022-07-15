@@ -15,7 +15,7 @@ from sklearn.metrics import f1_score
 import sys
 from random import choice
 from argparse import ArgumentParser
-from methods.utils import get_base_parser, get_dataset, get_X_y
+from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 
 def correlation_phase(X, y, k, method, methods):
     feature_scores = methods[method]['function'](X, y, k)
@@ -202,5 +202,5 @@ if __name__=="__main__":
     print(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
     
     new_X = correlation_phase(X, y, lower_bound, best_stable_method, methods)
-    new_X.to_csv(parsed_args.output_file, index=False)
+    new_X.to_csv(get_filename(parsed_args.output_file), index=False)
     print("Dataset final criado")

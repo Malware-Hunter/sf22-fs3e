@@ -46,3 +46,7 @@ def get_X_y(parsed_args, dataset):
     X = dataset.drop(columns = parsed_args.class_column)
     y = dataset[parsed_args.class_column]
     return X, y
+
+def get_filename(output_file, prefix='', suffix='', extension='.csv'):
+    names = [prefix, output_file.replace(extension, ''), suffix]
+    return '_'.join(filter(None, names)) + extension

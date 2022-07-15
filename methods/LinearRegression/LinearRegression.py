@@ -6,7 +6,7 @@ import time
 import sys
 
 from argparse import ArgumentParser
-from methods.utils import get_base_parser, get_dataset, get_X_y
+from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 
 def parse_args(argv):
     parser = ArgumentParser(parents=[get_base_parser()])
@@ -93,5 +93,5 @@ if __name__=="__main__":
     #fim = time.time()
     MaxValue()
 
-    NewDataset().to_csv(args.output_file, index=False)
+    NewDataset().to_csv(get_filename(args.output_file), index=False)
     
