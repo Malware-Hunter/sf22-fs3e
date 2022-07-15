@@ -15,6 +15,8 @@
 - (Estevão) `tool.py`: implementar opção que executa modelos de ML
 
 ## Tarefas realizadas
+- (Estevão) Corrigir nomes dos arquivos de saída nos métodos
+    - O objetivo é fazer com que o dataset de features selecionadas seja exportado com o nome passado como parâmetro, ao passo que outros arquivos de saída tenham o nome sufixado com alguma coisa para diferenciar
 - (Estevão) `tool.py`: implementar opção que executa métodos de feature selection usando os shell scripts
 - (Estevão) `tool.py`: fazer parsing das opções do comando run
 - (Luíza) Fazer validação cruzada 10 fold no `evaluation.py`
