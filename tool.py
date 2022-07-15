@@ -61,6 +61,9 @@ command = {
 
 def main():
     parsed_args = parse_args()
+    if(parsed_args.command == None):
+        print("Error: you must use one of these commands:", ', '.join(command.keys()))
+        exit(1)
     command[parsed_args.command](parsed_args)
         
 if __name__ == '__main__':
