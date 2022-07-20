@@ -10,12 +10,14 @@
 - Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
+- (Sávio) `LinearRegression.py`: incluir a coluna de classe do dataset no dataset exportado
+    - Atualmente, o código gera um dataset que contém apenas as features selecionadas, mas é preciso também ter a classe deles.
 - (Estevão) RFG: Automatizar escolha do melhor dataset de features selecionadas
-- (Estevão) mover os shells scripts `roda_<metodo>.sh` para o diretório respectivo de cada método
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
-- (Estevão) `tool.py`: implementar opção que executa modelos de ML
+- (Estevão) `moto_suite.py`: implementar opção que executa modelos de ML
 ## Tarefas realizadas
+- (Estevão) mover os shells scripts `roda_<metodo>.sh` para o diretório respectivo de cada método
 - (Estevão) Corrigir nomes dos arquivos de saída nos métodos
     - O objetivo é fazer com que o dataset de features selecionadas seja exportado com o nome passado como parâmetro, ao passo que outros arquivos de saída tenham o nome sufixado com alguma coisa para diferenciar
 - (Estevão) `tool.py`: implementar opção que executa métodos de feature selection usando os shell scripts
