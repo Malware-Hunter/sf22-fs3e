@@ -11,10 +11,11 @@ def create_executable_for(program_name, method_name):
     return executable
 
 def get_fs_methods():
-    program_names = glob.glob('roda_*.sh')
+    program_names = glob.glob('methods/*/run.sh')
+    print(program_names)
     fs_methods = {}
     for program_name in program_names:
-        method_name = program_name.replace('roda_', '').replace('.sh', '').lower()
+        method_name = program_name.split('/')[1].lower()
         fs_methods[method_name] = create_executable_for(program_name, method_name)
     return fs_methods
 
