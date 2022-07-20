@@ -10,7 +10,7 @@ OUTPUT_FILE=$1
 shift
 for DATASET in $*
 do
-    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
+    D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     TS=$(date +%Y%m%d%H%M%S)
     echo "python3 -m methods.LinearRegression.LinearRegression -d $DATASET -o $OUTPUT_FILE"
     { time python3 -m methods.LinearRegression.LinearRegression -d $DATASET -o $OUTPUT_FILE; } 2> time_lr_${D_NAME}_$TS.txt

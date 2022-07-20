@@ -9,7 +9,7 @@ OUTPUT_FILE=$1
 shift
 for DATASET in $*
 do
-    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
+    D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUTPUT_FILE --feature-selection-only --exclude-hyperparameter"
     python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUTPUT_FILE --feature-selection-only --exclude-hyperparameter
 done

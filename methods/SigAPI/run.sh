@@ -22,7 +22,7 @@ OUTPUT_FILE=$1
 shift
 for DATASET in $*
 do
-    D_NAME=$(echo $DATASET | awk -F, '{print NF}')
+    D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     set_increment `head -1 $DATASET | awk -F, '{print NF-1}'`
     TS=$(date +%Y%m%d%H%M%S)
     echo "python3 -m methods.SigAPI.main -d $DATASET -o resultado-selecao-$D_NAME -i $INCREMENT"
