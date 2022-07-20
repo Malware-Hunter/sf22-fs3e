@@ -7,7 +7,7 @@ import pandas as pd
 
 from argparse import ArgumentParser
 import sys
-from methods.utils import get_base_parser, get_dataset, get_X_y
+from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 
 def parse_args(argv):
     base_parser = get_base_parser()
@@ -44,7 +44,7 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
     Se o parâmetro "k_list" for uma lista não vazia, então ele será usado como a lista das quantidades de características a serem selecionadas. 
     """
     results = []
-    best_features = []
+    feature_rankings = {}
     if(len(k_list) > 0):
         k_values = k_list
     else:
@@ -61,12 +61,7 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
                 feature_scores_sorted = pd.DataFrame(list(zip(X_selected.columns.values.tolist(), selector.scores_)), columns= ['features','score']).sort_values(by = ['score'], ascending=False)
                 X_selected_sorted = X_selected.loc[:, list(feature_scores_sorted['features'])]
                 X_selected_sorted['class'] = y
-
-                best_features.append({
-                    'score_function' : score_function.__name__, 
-                    'selected_dataset' : X_selected_sorted,
-                    'k': k 
-                })
+                feature_rankings[score_function.__name__] = X_selected_sorted
                 if(X_selected.shape[1] == 1):
                     print("AVISO: 0 features selecionadas")
             if(is_feature_selection_only):
@@ -93,7 +88,24 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
                                 })
                 fold += 1
             
-    return pd.DataFrame(results), best_features
+    return pd.DataFrame(results), feature_rankings
+
+def get_best_result(results, threshold=0.95):
+    averages = results.groupby(['k','score_function']).mean().drop(columns=['n_fold'])
+    maximun_score = max(averages.max())
+
+    for k, score_function in averages.index:
+        if(all([score > threshold * maximun_score for score in averages.loc[(k, score_function)]])):
+            return (k, score_function)
+
+def get_best_features_dataset(best_result, feature_rankings, class_column):
+    k, score_function = best_result
+    X = feature_rankings[score_function].drop(columns=[class_column])
+    y = feature_rankings[score_function][class_column]
+    X_selected = X.iloc[:, :k]
+    X_selected[class_column] = y
+
+    return X_selected
 
 def main():    
     parsed_args = parse_args(sys.argv[1:])
@@ -104,7 +116,7 @@ def main():
         'RandomForest': RandomForestClassifier(),
     }
 
-    results, best_features = run_experiment(
+    results, feature_rankings = run_experiment(
         X, y, 
         classifiers, 
         n_folds = parsed_args.n_folds, 
@@ -113,16 +125,8 @@ def main():
         is_feature_selection_only=parsed_args.feature_selection_only
     )
 
-    if(not parsed_args.feature_selection_only):
-        results.to_csv(parsed_args.output_file, index=False)
-    for best_feature in best_features:
-        k = best_feature['k']
-        score_function = best_feature['score_function']
-        file_name = f"top_{k}_features_with_{score_function}_{parsed_args.output_file}.csv"
-        best_feature['selected_dataset'].to_csv(file_name, index=False)
-    print("done")
-
-    exit(0)
+    filename = get_filename(parsed_args.output_file)
+    get_best_features_dataset(get_best_result(results), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
 
 if __name__ == '__main__':
     main()
