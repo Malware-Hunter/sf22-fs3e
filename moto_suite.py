@@ -1,22 +1,25 @@
 from argparse import ArgumentParser
+from keyword import kwlist
 import sys
 import glob
 import subprocess
+import asyncio
 
-def create_executable_for(program_name, method_name):
-    def executable(parsed_args):
-        print("BEGIN", program_name)
-        subprocess.Popen(['/bin/bash', program_name, f'{parsed_args.output_prefix}_{method_name}.csv', f"{' '.join(parsed_args.datasets)}"])
+def create_executable_for_method(program_name, method_name):
+    async def executable(parsed_args):
+        cmd = ['/bin/bash', program_name, f'{parsed_args.output_prefix}_{method_name}.csv', f"{' '.join(parsed_args.datasets)}"]
+        process = await asyncio.create_subprocess_exec(*cmd)
+        await process.wait()
+        return process.returncode, method_name
 
     return executable
 
 def get_fs_methods():
     program_names = glob.glob('methods/*/run.sh')
-    print(program_names)
     fs_methods = {}
     for program_name in program_names:
         method_name = program_name.split('/')[1].lower()
-        fs_methods[method_name] = create_executable_for(program_name, method_name)
+        fs_methods[method_name] = create_executable_for_method(program_name, method_name)
     return fs_methods
 
 ml_models = ['svm', 'rf']
@@ -41,10 +44,20 @@ def parse_args():
     args = parser.parse_args(sys.argv[1:])
     return args
 
-def run_command(parsed_args):
+async def run_command(parsed_args):
     chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
+    tasks = []
     for method in chosen_methods:
-        fs_methods[method](parsed_args)
+        print(f"STARTING {method}")
+        tasks.append(asyncio.create_task(fs_methods[method](parsed_args)))
+
+    for task in tasks:
+        await task
+    
+    for task in tasks:
+        returncode, method_name = task.result()
+        if(returncode == 0):
+            print(f'FINISHED SUCCESSFULLY {method_name}')
 
 def list_command(parsed_args):
     if(parsed_args.fs_methods):
@@ -56,7 +69,7 @@ def list_command(parsed_args):
         print('models:', ', '.join(ml_models))
 
 command = {
-    'run' : run_command,
+    'run' : lambda parsed_args: asyncio.run(run_command(parsed_args)),
     'list': list_command
 }
 

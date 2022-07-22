@@ -14,6 +14,7 @@
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
 - (Estevão) `moto_suite.py`: implementar opção que executa modelos de ML
 ## Tarefas realizadas
+- (Estevão) `moto_suite.py`: rodar métodos de seleção em paralelo
 - (Estevão) RFG: Automatizar escolha do melhor dataset de features selecionadas
 - (Estevão) mover os shells scripts `roda_<metodo>.sh` para o diretório respectivo de cada método
 - (Estevão) Corrigir nomes dos arquivos de saída nos métodos
