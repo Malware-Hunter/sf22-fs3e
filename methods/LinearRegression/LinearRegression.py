@@ -1,10 +1,8 @@
 import numpy as np
 import pandas as pd
+import sys
 from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression
-import time
-import sys
-
 from argparse import ArgumentParser
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 
@@ -13,14 +11,13 @@ def parse_args(argv):
     args = parser.parse_args(argv)
     return args
 
-#FOLDERS
+# FOLDERS
 def KFolders():
     kf = KFold(n_splits=10, shuffle=False) # set division - in 10 folds
-    kf.get_n_splits(X) # returns the number of split iterations in the cross validator
-    #print(kf)
+    kf.get_n_splits(X) # retorna o número de iterações divididas na validação cruzada
     return (kf)
 
-#FILTRAGEM DAS FEATURES
+# FILTRAGEM DAS FEATURES
 def FilterFeatures(ft_names, coef):
   i=0
   n1 = len(coef)
@@ -40,9 +37,7 @@ def LinearR():
         model = LinearRegression()
         model.fit(X_train, y_train)                          
         coef_in = model.coef_
-
         ft_to_delete = FilterFeatures(features_names, coef_in)
-
         fold_ft_num.append(len(ft_to_delete))
         fold_ft_to_delete.append(ft_to_delete)
 
@@ -50,9 +45,6 @@ def LinearR():
             index = list(features_names).index(ft)
             #print(index)
             fold_count[index]-=1
-        #fold_count
-        #print('fold_ft_num', fold_ft_num)
-        #print('fold_ft_to_delete', fold_ft_to_delete)
     return(fold_ft_num, fold_ft_to_delete)
 
 # VALOR MÁXIMO DE FEATURES PARA EXCLUSÃO
@@ -73,10 +65,10 @@ def NewDataset():
     new_X = X.drop(columns=fold_ft_to_delete[MaxValue()])
     #print(new_X)
     df2 = pd.DataFrame(new_X)
+    df2['class'] = y
     return df2
 
 if __name__=="__main__":
-    
     args = parse_args(sys.argv[1:])
     X, y = get_X_y(args, get_dataset(args))
 
@@ -88,9 +80,7 @@ if __name__=="__main__":
 
     # CHAMADA DAS FUNÇÕES
     KFolders()
-    #inicio = time.time()
     LinearR()
-    #fim = time.time()
     MaxValue()
 
     NewDataset().to_csv(get_filename(args.output_file), index=False)
