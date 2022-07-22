@@ -10,8 +10,6 @@
 - Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
-- (Sávio) `LinearRegression.py`: incluir a coluna de classe do dataset no dataset exportado
-    - Atualmente, o código gera um dataset que contém apenas as features selecionadas, mas é preciso também ter a classe deles.
 - (Estevão) RFG: Automatizar escolha do melhor dataset de features selecionadas
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
@@ -42,3 +40,5 @@
 - definir o time de trabalho;
 - (Sávio) Usar underlines ("\_") nos arquivos de saída dos métodos
     - Verificar os códigos python de cada método
+- (Sávio) `LinearRegression.py`: incluir a coluna de classe do dataset no dataset exportado
+    - Atualmente, o código gera um dataset que contém apenas as features selecionadas, mas é preciso também ter a classe deles.
