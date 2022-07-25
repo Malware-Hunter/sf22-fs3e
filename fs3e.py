@@ -1,8 +1,6 @@
 from argparse import ArgumentParser
-from keyword import kwlist
 import sys
 import glob
-import subprocess
 import asyncio
 
 def create_executable_for_method(program_name, method_name):
