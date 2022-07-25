@@ -10,7 +10,7 @@ def parse_args(argv):
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
     parser.add_argument(
         '-m', '--model', metavar='str',
-        help="Classifier.",
+        help="Models to run evaluation: 'svm', 'rf' (for Random Forest) or 'both'. Default: 'both'",
         choices=['svm', 'rf','both'],
         type=str, default='both')
     parser.add_argument('--n_folds', metavar = 'INT', type = int, default = 10,
