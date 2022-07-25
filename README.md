@@ -14,21 +14,36 @@ Primeiras ideias:
 
 6. A ferramenta poderá também gerar automaticamente gráficos ou tabelas das saídas dos modelos RF e SVM;
 
-Exemplos de parâmetros e execução:
+# Como rodar
+
+O `fs3e.py` possui dois subcomandos: `run` e `list`, como mostra os detalhes de uso a seguir. Cada subcomando possui seu próprio manual de uso, que pode ser visto com a opção `--help` (e.g. `python3 fs3e.py run --help`).
 
 ```bash
-tool.py list --methods
-tool.py list --models
-tool.py list --all
+usage: fs3e.py [-h] {list,run} ...
 
-tool.py run --fs-methods rfg sigapi --ml-models rf --output-prefix resultados --plot-graph-all -d datasets/*.csv
+Suite to run feature selection (FS) methods and evaluation of machine learning (ML) algorithms
 
-tool.py run --fs-methods sigapi --ml-models rf svm --output-fs-rfg rfg.csv --output-fs-sigapi sigapi.csv --output-ml-rf rf.csv --output-ml-svm svm.csv --plot-graph-all -d motodroid.csv 
+options:
+  -h, --help  show this help message and exit
 
-tool.py run --fs-methods all --ml-models all --plot-graph-all -d motodroid.csv androcrawl.csv drebin215.csv
-tool.py run -d motodroid.csv
+Available commands:
+  {list,run}
+    list      List available feature selection methods and/or machine learning models
+    run       Run experiment with feature selection methods and ML models
+
 ```
 
+## Exemplos de uso
+```bash
+python3 fs3e.py list --methods
+python3 fs3e.py list --models
+python3 fs3e.py list --all
+
+python3 fs3e.py run -d motodroid.csv
+
+## Rodando com métodos e modelo específicos
+python3 fs3e.py run --fs-methods rfg sigapi --ml-model rf -d datasets/*.csv
+```
 ###### methods
 Códigos dos métodos.
 
