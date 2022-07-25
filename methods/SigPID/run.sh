@@ -5,13 +5,12 @@ PKGS=(pandas scikit-learn mlxtend matplotlib)
 CHECK_PKGS=`pip show ${PKGS[@]} | grep -i -w "not found"`
 [ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install ${PKGS[@]}"; exit; }
 
-[[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_FILE DATASET [DATASET...]" && exit 1;}
-OUTPUT_FILE=$1
-shift
+[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
 for DATASET in $*
 do
     D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     TS=$(date +%Y%m%d%H%M%S)
-    echo "python3 -m methods.SigPID.sigpid -d $DATASET -o $OUTPUT_FILE"
-    { time python3 -m methods.SigPID.sigpid -d $DATASET -o $OUTPUT_FILE; } 2> time_sigpid_${D_NAME}_$TS.txt
+    OUT_FILENAME="dataset_sigpid_${D_NAME}_$TS"
+    echo "python3 -m methods.SigPID.sigpid -d $DATASET -o $OUT_FILENAME"
+    { time python3 -m methods.SigPID.sigpid -d $DATASET -o $OUT_FILENAME; } 2> time_$OUT_FILENAME.txt
 done
