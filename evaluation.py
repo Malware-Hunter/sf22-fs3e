@@ -10,9 +10,9 @@ def parse_args(argv):
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
     parser.add_argument(
         '-m', '--model', metavar='str',
-        help="Models to run evaluation: 'svm', 'rf' (for Random Forest) or 'both'. Default: 'both'",
-        choices=['svm', 'rf','both'],
-        type=str, default='both')
+        help="Models to run evaluation: 'svm', 'rf' (for Random Forest) or 'all'. Default: 'all'",
+        choices=['svm', 'rf','all'],
+        type=str, default='all')
     parser.add_argument('--n_folds', metavar = 'INT', type = int, default = 10,
         help="Number of folds to use in cross validation. Default: 10")
     args = parser.parse_args(argv)
