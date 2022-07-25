@@ -2,14 +2,18 @@ from argparse import ArgumentParser
 import sys
 import glob
 import asyncio
+from itertools import chain
 
-def create_executable_for_method(program_name, method_name):
-    async def executable(parsed_args):
-        cmd = ['/bin/bash', program_name, f'{parsed_args.output_prefix}_{method_name}.csv', f"{' '.join(parsed_args.datasets)}"]
-        process = await asyncio.create_subprocess_exec(*cmd)
+def get_method_result_filename(prefix, method_name):
+    return f'{prefix}_{method_name}.csv'
+
+def create_executable(program_name):
+    async def executable(*args):
+        process = await asyncio.create_subprocess_exec('/bin/bash', program_name, *args)
         await process.wait()
-        return process.returncode, method_name
-
+        if(process.returncode != 0):
+            print(f"WARN: program '{program_name}' called with args '{' '.join(args)}' returned with error")
+        return program_name, args
     return executable
 
 def get_fs_methods():
@@ -17,10 +21,10 @@ def get_fs_methods():
     fs_methods = {}
     for program_name in program_names:
         method_name = program_name.split('/')[1].lower()
-        fs_methods[method_name] = create_executable_for_method(program_name, method_name)
+        fs_methods[method_name] = create_executable(program_name)
     return fs_methods
 
-ml_models = ['svm', 'rf']
+ml_models = ['svm','rf']
 fs_methods = get_fs_methods()
 
 def parse_args():
@@ -34,28 +38,34 @@ def parse_args():
     list_group.add_argument("--ml-models", action='store_true')
 
     run_parser = subparsers.add_parser("run", help='Run experiment with feature selection methods and ML models')
-    run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
-    run_parser.add_argument(f'--ml-models', help=f'Machine learning models to include', choices=ml_models + ['all'], nargs='*', default='all')
     run_parser.add_argument('-d', '--datasets', required=True, help='Datasets to run the experiment', nargs='+')
-    run_parser.add_argument('--output-prefix', help='Output file prefix. Default: result', default='result')
+    run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
+    run_parser.add_argument(f'--ml-model', help=f'Machine learning model for evaluation of datasets resulting from feature selection. Default: all', choices=ml_models + ['all'], default='all')
 
     args = parser.parse_args(sys.argv[1:])
     return args
 
-async def run_command(parsed_args):
-    chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
+async def run_fs_methods(chosen_methods, datasets):
     tasks = []
     for method in chosen_methods:
         print(f"STARTING {method}")
-        tasks.append(asyncio.create_task(fs_methods[method](parsed_args)))
-
+        tasks.append(asyncio.create_task(fs_methods[method](' '.join(datasets))))
     for task in tasks:
         await task
-    
-    for task in tasks:
-        returncode, method_name = task.result()
-        if(returncode == 0):
-            print(f'FINISHED SUCCESSFULLY {method_name}')
+
+async def run_ml_model(model, datasets):
+    model_executable = create_executable('run_evaluation.sh')
+    await model_executable(model, ' '.join(datasets))
+
+
+async def run_command(parsed_args):
+    chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
+    await run_fs_methods(chosen_methods, parsed_args.datasets)
+
+    # [IMPORTANTE]
+    # para obter os datasets de features selecionadas, a linha a seguir assume que eles possuem o nome no formato especificado
+    dataset_filenames = chain(*[glob.glob(f"dataset_{method}*.csv") for method in chosen_methods])
+    await run_ml_model(parsed_args.ml_model, dataset_filenames)
 
 def list_command(parsed_args):
     if(parsed_args.fs_methods):
