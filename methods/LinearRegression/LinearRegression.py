@@ -83,5 +83,5 @@ if __name__=="__main__":
     LinearR()
     MaxValue()
 
-    NewDataset().to_csv(get_filename(args.output_file), index=False)
+    NewDataset().to_csv(get_filename(args.output_file, prefix=args.output_prefix), index=False)
     

@@ -29,6 +29,8 @@ def get_base_parser():
         help = 'Use a subset of n samples from the dataset. By default, all samples are used.')
     parser.add_argument('-o', '--output-file', metavar = 'OUTPUT_FILE', type = str, default = 'results.csv', 
         help = 'Output file name. Default: results.csv')
+    parser.add_argument('--output-prefix', metavar = 'OUTPUT_PREFIX', default = '', 
+        help = 'Prefix of output file name. Defaults to an empty string')
     return parser
 
 def get_dataset(parsed_args):

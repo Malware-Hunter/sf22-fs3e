@@ -125,7 +125,7 @@ def main():
         is_feature_selection_only=parsed_args.feature_selection_only
     )
 
-    filename = get_filename(parsed_args.output_file)
+    filename = get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix)
     get_best_features_dataset(get_best_result(results), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
 
 if __name__ == '__main__':

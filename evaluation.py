@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_validate
-from methods.utils import get_dataset, get_base_parser, get_X_y
+from methods.utils import get_dataset, get_base_parser, get_X_y, get_filename
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
@@ -41,4 +41,4 @@ if __name__=="__main__":
     
     for classifier_name, clf in classifiers.items():
         results.append({**cross_validation(clf, X, y, args.n_folds), "model": classifier_name})
-    pd.DataFrame(results).to_csv(args.output_file, index = False)
+    pd.DataFrame(results).to_csv(get_filename(args.output_file, prefix=args.output_prefix), index = False)

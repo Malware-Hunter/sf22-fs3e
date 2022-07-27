@@ -185,7 +185,7 @@ if __name__ == "__main__":
         print("AVISO: 0 features selecionadas")
     features_dataset = X
     features_dataset['class'] = y
-    features_dataset.to_csv(get_filename(parsed_args.output_file), index = False)
+    features_dataset.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix), index = False)
     if(parsed_args.feature_selection_only):
         print("Selected Features >>", features_dataset.shape[1]-1, "of", init_size)
         exit(0)
@@ -206,4 +206,4 @@ if __name__ == "__main__":
                             mapping_functions, cv=parsed_args.cv, train_size=parsed_args.train_size,
                             include_hyperparameter = not parsed_args.exclude_hyperparameter)
 
-    results.to_csv(get_filename(parsed_args.output_file, suffix='evaluation_results'), index = False)
+    results.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix, suffix='evaluation_results'), index = False)

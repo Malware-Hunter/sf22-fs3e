@@ -202,5 +202,5 @@ if __name__=="__main__":
     print(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
     
     new_X = correlation_phase(X, y, lower_bound, best_stable_method, methods)
-    new_X.to_csv(get_filename(parsed_args.output_file), index=False)
+    new_X.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix), index=False)
     print("Dataset final criado")
