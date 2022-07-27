@@ -14,8 +14,8 @@
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
 - (Estevão) `fs3e.py`: Adicionar opção `--output-prefix`
 - (Estevão) `fs3e.py`: Gerar gráfico dos resultados da avaliação
-- (Estevão) descrever dependências do `fs3e.py`
 ## Tarefas realizadas
+- (Estevão) descrever dependências do `fs3e.py`
 - (Estevão) `fs3e.py`: implementar opção que executa modelos de ML
 - (Estevão) `fs3e.py`: rodar métodos de seleção em paralelo
 - (Estevão) RFG: Automatizar escolha do melhor dataset de features selecionadas

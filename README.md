@@ -1,6 +1,6 @@
 # sf22_feature_selection
 
-Ferramenta para automatizar e simplificar a execução dos métodos.
+Ferramenta para automatizar e simplificar a execução de métodos de seleção de características (FS) e modelos de machine learning (ML).
 
 Primeiras ideias:
 1. A ferramenta deve ser capaz de executar o método selecionado pelo usuário;
@@ -13,6 +13,18 @@ Primeiras ideias:
 - o arquivo de saída para as métricas dos modelos de ML RF e SVM;
 
 6. A ferramenta poderá também gerar automaticamente gráficos ou tabelas das saídas dos modelos RF e SVM;
+
+# Como instalar
+
+## Dependências
+
+O `fs3e.py` foi desenvolvido em um sistema Linux com as seguintes especificações:
+- OS: Linux Ubuntu 22.04 LTS
+- Kernel: 5.15.0-41-generic
+- Python 3.10.4
+- Pip 22.0.2
+
+As dependências de cada método de FS e modelo de ML são verificadas e instaladas (se necessário) nos shell scripts `run` de cada método/modelo.
 
 # Como rodar
 
