@@ -12,7 +12,8 @@ set_increment(){
     INCREMENT=200
 }
 
-[[ $1 ]] || { echo "Uso: bash $0 DATASET [DATASET...]" && exit 1;}
+[[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_PREFIX DATASET [DATASET...]" && exit 1;}
+OUTPUT_PREFIX=$1; shift
 for DATASET in $*
 do
     TOTAL_N_FEATURES=`head -1 "$DATASET" | awk -F, '{print NF-1}'`
@@ -20,6 +21,6 @@ do
     set_increment $TOTAL_N_FEATURES
     TS=$(date +%Y%m%d%H%M%S)
     OUT_FILENAME="dataset_rfg_${D_NAME}_$TS"
-    echo  "python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME"
-    { time python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME; } 2> time_$OUT_FILENAME.txt
+    echo  "python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX"
+    { time python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX; } 2> time_$OUT_FILENAME.txt
 done

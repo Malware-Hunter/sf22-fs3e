@@ -41,31 +41,32 @@ def parse_args():
     run_parser.add_argument('-d', '--datasets', required=True, help='Datasets to run the experiment', nargs='+')
     run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
     run_parser.add_argument(f'--ml-model', help=f'Machine learning model for evaluation of datasets resulting from feature selection. Default: all', choices=ml_models + ['all'], default='all')
+    run_parser.add_argument(f'--output-prefix', help="Prefix of output file names; Default: ''", default='')
 
     args = parser.parse_args(sys.argv[1:])
     return args
 
-async def run_fs_methods(chosen_methods, datasets):
+async def run_fs_methods(output_prefix, chosen_methods, datasets):
     tasks = []
     for method in chosen_methods:
         print(f"STARTING {method}")
-        tasks.append(asyncio.create_task(fs_methods[method](' '.join(datasets))))
+        tasks.append(asyncio.create_task(fs_methods[method](output_prefix, ' '.join(datasets))))
     for task in tasks:
         await task
 
-async def run_ml_model(model, datasets):
+async def run_ml_model(output_prefix, model, datasets):
     model_executable = create_executable('run_evaluation.sh')
-    await model_executable(model, ' '.join(datasets))
+    await model_executable(output_prefix, model, ' '.join(datasets))
 
 
 async def run_command(parsed_args):
     chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
-    await run_fs_methods(chosen_methods, parsed_args.datasets)
+    await run_fs_methods(parsed_args.output_prefix, chosen_methods, parsed_args.datasets)
 
     # [IMPORTANTE]
     # para obter os datasets de features selecionadas, a linha a seguir assume que eles possuem o nome no formato especificado
-    dataset_filenames = chain(*[glob.glob(f"dataset_{method}*.csv") for method in chosen_methods])
-    await run_ml_model(parsed_args.ml_model, dataset_filenames)
+    dataset_filenames = chain(*[glob.glob(f"{parsed_args.output_prefix}_dataset_{method}*.csv") for method in chosen_methods])
+    await run_ml_model(parsed_args.output_prefix, parsed_args.ml_model, dataset_filenames)
 
 def list_command(parsed_args):
     if(parsed_args.fs_methods):

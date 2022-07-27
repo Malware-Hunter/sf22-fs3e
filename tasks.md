@@ -12,9 +12,9 @@
 ## Tarefas pendentes
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
-- (Estevão) `fs3e.py`: Adicionar opção `--output-prefix`
 - (Estevão) `fs3e.py`: Gerar gráfico dos resultados da avaliação
 ## Tarefas realizadas
+- (Estevão) `fs3e.py`: Adicionar opção `--output-prefix`
 - (Estevão) descrever dependências do `fs3e.py`
 - (Estevão) `fs3e.py`: implementar opção que executa modelos de ML
 - (Estevão) `fs3e.py`: rodar métodos de seleção em paralelo
