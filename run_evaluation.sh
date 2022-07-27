@@ -13,5 +13,5 @@ do
     TS=$(date +%Y%m%d%H%M%S)
     OUT_FILENAME="ml_results_${MODEL}_${D_NAME}"
     echo  "python3 -m evaluation -d $DATASET -m $MODEL -o $OUT_FILENAME.csv --output-prefix $OUTPUT_PREFIX"
-    { time python3 -m evaluation -d $DATASET -m $MODEL -o $OUT_FILENAME.csv --output-prefix $OUTPUT_PREFIX ; } 2> time_$OUT_FILENAME.csv
+    { time python3 -m evaluation -d $DATASET -m $MODEL -o $OUT_FILENAME.csv --output-prefix $OUTPUT_PREFIX ; } 2> time_$OUT_FILENAME.txt
 done
