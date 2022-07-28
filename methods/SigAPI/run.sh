@@ -1,9 +1,6 @@
 #!/bin/bash
-CHECK_PIP=$(which pip)
-[ "$CHECK_PIP" != "" ] || { echo "instale o pip: sudo apt -y install python3-pip"; exit; }
-PKGS=(pandas numpy scikit-learn)
-CHECK_PKGS=`pip show ${PKGS[@]} | grep -i -w "not found"`
-[ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install ${PKGS[@]}"; exit; }
+. methods/utils.sh
+verify_pip_packages pandas numpy scikit-learn
 
 set_increment(){
     TOTAL_FEATURES=$1

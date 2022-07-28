@@ -1,8 +1,5 @@
-CHECK_PIP=$(which pip)
-CHECK_ZIP=$(which unzip)
-[ "$CHECK_PIP" != "" ] && [ "$CHECK_ZIP" != "" ] || { echo "instale o pip: sudo apt -y install python3-pip unzip"; exit; }
-CHECK_PKGS=$(pip show numpy scipy pandas scikit-learn | grep -i -w "not found")
-[ "$CHECK_PKGS" = "" ] || { echo "instale os pacotes Python: sudo pip install numpy scikit-learn scipy pandas"; exit; }
+. methods/utils.sh
+verify_pip_packages numpy scipy pandas scikit-learn
 
 [[ $1 && $2 ]] || { echo "Uso: bash $0 OUTPUT_PREFIX DATASET [DATASET...]" && exit 1;}
 OUTPUT_PREFIX=$1; shift
