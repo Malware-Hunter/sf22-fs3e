@@ -45,7 +45,7 @@ def parse_args():
     run_parser.add_argument('-d', '--datasets', required=True, help='Datasets to run the experiment', nargs='+')
     run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
     run_parser.add_argument(f'--ml-model', help=f'Machine learning model for evaluation of datasets resulting from feature selection. Default: all', choices=ml_models + ['all'], default='all')
-    run_parser.add_argument(f'--output-prefix', help="Prefix of output file names; Default: 'results'", default='results')
+    run_parser.add_argument(f'--output-prefix', help="Prefix of output file names. Should not be an empty string. Default: 'results'", default='results')
     run_parser.add_argument(f'--plot-fs-methods', help=f'Feature selection methods to plot. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
     run_parser.add_argument(f'--plot-ml-models', help=f'Machine learning model to plot. Default: all', choices=ml_models + ['all'], default='all', nargs='*')
 
