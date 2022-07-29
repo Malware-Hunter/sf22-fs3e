@@ -6,10 +6,6 @@ from itertools import chain
 import pandas as pd
 import re
 import seaborn as sns
-import matplotlib.pyplot as plt
-
-def get_method_result_filename(prefix, method_name):
-    return f'{prefix}_{method_name}.csv'
 
 def create_executable(program_name):
     async def executable(*args):
