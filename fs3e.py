@@ -3,6 +3,10 @@ import sys
 import glob
 import asyncio
 from itertools import chain
+import pandas as pd
+import re
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def get_method_result_filename(prefix, method_name):
     return f'{prefix}_{method_name}.csv'
@@ -42,6 +46,8 @@ def parse_args():
     run_parser.add_argument(f'--fs-methods', help=f'Feature selection methods to include. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
     run_parser.add_argument(f'--ml-model', help=f'Machine learning model for evaluation of datasets resulting from feature selection. Default: all', choices=ml_models + ['all'], default='all')
     run_parser.add_argument(f'--output-prefix', help="Prefix of output file names; Default: 'results'", default='results')
+    run_parser.add_argument(f'--plot-fs-methods', help=f'Feature selection methods to plot. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
+    run_parser.add_argument(f'--plot-ml-models', help=f'Machine learning model to plot. Default: all', choices=ml_models + ['all'], default='all', nargs='*')
 
     args = parser.parse_args(sys.argv[1:])
     return args
@@ -59,6 +65,26 @@ async def run_ml_model(output_prefix, model, datasets):
     await model_executable(output_prefix, model, ' '.join(datasets))
 
 
+def plot_results(all_ml_results_filenames, chosen_methods, chosen_models, output_prefix):
+    chosen_results_filenames = [results_filename for results_filename in all_ml_results_filenames if re.search('|'.join(chosen_methods), results_filename)]
+    for filename in chosen_results_filenames:
+        df = pd.read_csv(filename)
+        df_with_chosen_models = df[df['model'].isin(chosen_models)]
+
+        results_to_plot = df_with_chosen_models.melt(id_vars=['model'])
+        results_to_plot = results_to_plot.rename(columns={'variable': 'metric'})
+        sns.set_palette("colorblind")
+        g = sns.barplot(data=results_to_plot, x='model', y='value', hue='metric')
+
+        current_method = filename.split('_')[-3]
+        current_dataset = filename.split('_')[-2]
+        g.set_title(f'Results for {current_method} with dataset {current_dataset}')
+        g.set_ylabel('Value (%)')
+        g.set_xlabel('Model')
+        figure = g.get_figure()
+        figure.savefig(f"{output_prefix}_plot_of_{filename.replace('.csv', '')}.png", dpi=300)
+        figure.clf()
+
 async def run_command(parsed_args):
     chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
     await run_fs_methods(parsed_args.output_prefix, chosen_methods, parsed_args.datasets)
@@ -68,6 +94,11 @@ async def run_command(parsed_args):
     dataset_filenames = chain(*[glob.glob(f"{parsed_args.output_prefix}_dataset_{method}*.csv") for method in chosen_methods])
     await run_ml_model(parsed_args.output_prefix, parsed_args.ml_model, dataset_filenames)
 
+    ml_results_filenames = glob.glob(f"{parsed_args.output_prefix}_ml_results*.csv")
+    chosen_methods_to_plot = list(fs_methods.keys()) if 'all' in parsed_args.plot_fs_methods else parsed_args.plot_fs_methods
+    chosen_models_to_plot = ml_models if 'all' in parsed_args.plot_ml_models else parsed_args.plot_ml_models
+    plot_results(ml_results_filenames, chosen_methods_to_plot, chosen_models_to_plot, parsed_args.output_prefix)
+        
 def list_command(parsed_args):
     if(parsed_args.fs_methods):
         print(', '.join(fs_methods))
