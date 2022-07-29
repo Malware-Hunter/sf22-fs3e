@@ -16,7 +16,7 @@ Primeiras ideias:
 
 # Como instalar
 
-## Dependências
+## Ambiente 
 
 O `fs3e.py` foi desenvolvido em um sistema Linux com as seguintes especificações:
 - OS: Linux Ubuntu 22.04 LTS
@@ -24,7 +24,11 @@ O `fs3e.py` foi desenvolvido em um sistema Linux com as seguintes especificaçõ
 - Python 3.10.4
 - Pip 22.0.2
 
-As dependências de cada método de FS e modelo de ML são verificadas e instaladas (se necessário) nos shell scripts `run` de cada método/modelo.
+## Dependências
+
+- O `fs3e.py` em si requer apenas as dependências listadas no arquivo `requirements.txt`, que você pode instalar com o comando `pip3 install -r requirements.txt`. 
+
+- Já os métodos e modelos possuem suas próprias dependências. Elas são verificadas nos shell scripts `run` de cada método e modelo. Se for preciso instalar alguma, isso lhe será informado ao executar a ferramenta.
 
 # Como rodar
 
