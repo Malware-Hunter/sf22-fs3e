@@ -51,7 +51,7 @@ def parse_args():
 async def run_fs_methods(output_prefix, chosen_methods, datasets):
     tasks = []
     for method in chosen_methods:
-        #print(f"STARTING {method}")
+        STARTING {method}
         tasks.append(asyncio.create_task(fs_methods[method](output_prefix, ' '.join(datasets))))
     for task in tasks:
         await task
