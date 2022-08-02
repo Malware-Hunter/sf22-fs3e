@@ -10,9 +10,15 @@
 - Estevão, Sávio, Luiza, Diego, Nicolas
 
 ## Tarefas pendentes
+
+- (Estevão) remover código duplicado através de uma função bash genérica que chama cada método nos scripts `run.sh`
+
+- (Luiza, Sávio) Fazer com que o output dos métodos seja inteligível
+    - Printar somente a etapa em que o método em questão está
+
+## Tarefas realizadas
 - (Nicolas) Revisar os papers dos métodos e verificar se a nossa implementação condiz com o paper
     - Revisar LinearRegression, JOWMDroid, RFG, SigAPI e SigPID
-## Tarefas realizadas
 - (Estevão) `fs3e.py`: Gerar gráfico dos resultados da avaliação
 - (Estevão) `fs3e.py`: Adicionar opção `--output-prefix`
 - (Estevão) descrever dependências do `fs3e.py`
