@@ -8,6 +8,6 @@ do
     D_NAME=$(echo $DATASET | awk -F/ '{print $NF}')
     TS=$(date +%Y%m%d%H%M%S)
     OUT_FILENAME="dataset_jowmdroid_${D_NAME}_$TS"
-    echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --feature-selection-only --exclude-hyperparameter"
+    #echo "python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --output-prefix $OUTPUT_PREFIX --feature-selection-only --exclude-hyperparameter"
     { time python3 -m methods.JOWMDroid.JOWMDroid -d $DATASET -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX --feature-selection-only --exclude-hyperparameter; } 2> time_$OUT_FILENAME.txt
 done
