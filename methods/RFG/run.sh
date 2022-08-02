@@ -18,6 +18,6 @@ do
     set_increment $TOTAL_N_FEATURES
     TS=$(date +%Y%m%d%H%M%S)
     OUT_FILENAME="dataset_rfg_${D_NAME}_$TS"
-    echo  "python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX"
+    #echo  "python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX"
     { time python3 -m methods.RFG.rfg -d $DATASET -i $INCREMENT -o $OUT_FILENAME --output-prefix $OUTPUT_PREFIX; } 2> time_$OUT_FILENAME.txt
 done
