@@ -234,7 +234,7 @@ if __name__=="__main__":
             spn.stop()
             counter += increment
     #spn.stop()
-    print("PRNR:", best_PRNR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_PRNR_accuracy))
+    #print("PRNR:", best_PRNR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_PRNR_accuracy))
 
     #Plot PIS + PRNR
     plot_results("PRNR", "Best Accuracy", best_PRNR_counter, best_PRNR_accuracy)
@@ -281,7 +281,7 @@ if __name__=="__main__":
             spn.stop()
             counter += increment
     #spn.stop()
-    print("SPR:", best_SPR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_SPR_accuracy))
+    #print("SPR:", best_SPR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_SPR_accuracy))
 
     #Plot PIS + SPR
     plot_results("SPR", "Pruning Point", best_SPR_counter, best_SPR_accuracy)
