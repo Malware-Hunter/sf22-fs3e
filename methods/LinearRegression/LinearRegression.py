@@ -5,6 +5,7 @@ from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression
 from argparse import ArgumentParser
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
+import time
 
 def parse_args(argv):
     parser = ArgumentParser(parents=[get_base_parser()])
@@ -81,9 +82,11 @@ if __name__=="__main__":
     # CHAMADA DAS FUNÇÕES
     print("SETANDO KFOLDS EM 10\n")
     KFolders()
+    time.sleep(3)
     print("APLICANDO A REGRESSÃO LINEAR\n")
     LinearR()
     MaxValue()
+    time.sleep(3)
     print("GERANDO NOVO DATASET...\n")
     NewDataset().to_csv(get_filename(args.output_file, prefix=args.output_prefix), index=False)
     
