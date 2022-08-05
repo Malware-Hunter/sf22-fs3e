@@ -13,7 +13,7 @@ def parse_args(argv):
 
 # FOLDERS
 def KFolders():
-    kf = KFold(n_splits=10, shuffle=False) # set division - in 10 folds
+    kf = KFold(n_splits=10, shuffle=False) # set a divisão em 10 folds
     kf.get_n_splits(X) # retorna o número de iterações divididas na validação cruzada
     return (kf)
 
@@ -79,9 +79,11 @@ if __name__=="__main__":
     fold_ft_to_delete = []
 
     # CHAMADA DAS FUNÇÕES
+    print("SETANDO KFOLDS EM 10\n")
     KFolders()
+    print("APLICANDO A REGRESSÃO LINEAR\n")
     LinearR()
     MaxValue()
-
+    print("GERANDO NOVO DATASET...\n")
     NewDataset().to_csv(get_filename(args.output_file, prefix=args.output_prefix), index=False)
     
