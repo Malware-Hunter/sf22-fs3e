@@ -197,7 +197,7 @@ if __name__=="__main__":
     if(parsed_args.initial_n_features > total_features):
         print(f"ERRO: --initial-n-features ({parsed_args.initial_n_features}) maior que a qtd de features do dataset ({total_features})")
         exit(1)
-        print("INÍCIO DA SELEÇÃO DE FEATURES\n")
+    print("INÍCIO DA SELEÇÃO DE FEATURES\n")
     best_stable_method, lower_bound = selection_phase(X, y, methods, num_features=parsed_args.initial_n_features, increment=parsed_args.increment)
     print("SUGESTÃO DE LIMITE PARA A FASE DE CORRELAÇÃO\n")
     print(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
