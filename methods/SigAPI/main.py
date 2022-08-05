@@ -197,10 +197,10 @@ if __name__=="__main__":
     if(parsed_args.initial_n_features > total_features):
         print(f"ERRO: --initial-n-features ({parsed_args.initial_n_features}) maior que a qtd de features do dataset ({total_features})")
         exit(1)
-    
+        print("INÍCIO DA SELEÇÃO DE FEATURES\n")
     best_stable_method, lower_bound = selection_phase(X, y, methods, num_features=parsed_args.initial_n_features, increment=parsed_args.increment)
     print(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
-    
+    print("INICIO DA CORRELAÇÃO\n")
     new_X = correlation_phase(X, y, lower_bound, best_stable_method, methods)
     new_X.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix), index=False)
     print("Dataset final criado")
