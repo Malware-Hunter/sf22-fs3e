@@ -88,5 +88,7 @@ if __name__=="__main__":
     MaxValue()
     time.sleep(3)
     print("GERANDO NOVO DATASET...\n")
+   
     NewDataset().to_csv(get_filename(args.output_file, prefix=args.output_prefix), index=False)
+    print("DATASET GERADO COM SUCESSO\n")
     
