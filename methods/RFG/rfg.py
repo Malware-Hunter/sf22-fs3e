@@ -106,7 +106,7 @@ def get_best_features_dataset(best_result, feature_rankings, class_column):
     X = feature_rankings[score_function].drop(columns=[class_column])
     y = feature_rankings[score_function][class_column]
     X_selected = X.iloc[:, :k]
-    X_selected[class_column] = y
+    X_selected = X_selected.join(y)
 
     return X_selected
 
