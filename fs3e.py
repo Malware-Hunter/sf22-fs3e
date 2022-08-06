@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import argparse
 import sys
 import glob
 import asyncio
@@ -6,13 +7,16 @@ from itertools import chain
 import pandas as pd
 import re
 import seaborn as sns
+import logging
 
 def create_executable(program_name):
     async def executable(*args):
+        global logger
         process = await asyncio.create_subprocess_exec('/bin/bash', program_name, *args)
         await process.wait()
         if(process.returncode != 0):
-            print(f"WARN: program '{program_name}' called with args '{' '.join(args)}' returned with error")
+            msg = f"WARN: program '{program_name}' called with args '{' '.join(args)}' returned with error"
+            logger.warning(msg)
         return program_name, args
     return executable
 
@@ -27,8 +31,16 @@ def get_fs_methods():
 ml_models = ['svm','rf']
 fs_methods = get_fs_methods()
 
+class DefaultHelpParser(argparse.ArgumentParser):
+    def error(self, message):
+        global logger
+        self.print_usage()
+        logger.error(message)
+        sys.exit(2)
+
 def parse_args():
-    parser = ArgumentParser(description="Suite to run feature selection (FS) methods and evaluation of machine learning (ML) algorithms")
+    parser = DefaultHelpParser(description="Suite to run feature selection (FS) methods and evaluation of machine learning (ML) algorithms")
+    #parser = ArgumentParser(description="Suite to run feature selection (FS) methods and evaluation of machine learning (ML) algorithms")
     subparsers = parser.add_subparsers(title='Available commands', dest="command")
 
     list_parser = subparsers.add_parser('list', help='List available feature selection methods and/or machine learning models')
@@ -49,9 +61,11 @@ def parse_args():
     return args
 
 async def run_fs_methods(output_prefix, chosen_methods, datasets):
+    global logger
     tasks = []
     for method in chosen_methods:
-        print(f"STARTING {method}")
+        msg = f"STARTING {method}"
+        logger.info(msg)
         tasks.append(asyncio.create_task(fs_methods[method](output_prefix, ' '.join(datasets))))
     for task in tasks:
         await task
@@ -94,7 +108,7 @@ async def run_command(parsed_args):
     chosen_methods_to_plot = list(fs_methods.keys()) if 'all' in parsed_args.plot_fs_methods else parsed_args.plot_fs_methods
     chosen_models_to_plot = ml_models if 'all' in parsed_args.plot_ml_models else parsed_args.plot_ml_models
     plot_results(ml_results_filenames, chosen_methods_to_plot, chosen_models_to_plot, parsed_args.output_prefix)
-        
+
 def list_command(parsed_args):
     if(parsed_args.fs_methods):
         print(', '.join(fs_methods))
@@ -110,11 +124,17 @@ command = {
 }
 
 def main():
+    global logger
     parsed_args = parse_args()
     if(parsed_args.command == None):
-        print("Error: you must use one of these commands:", ', '.join(command.keys()))
+        msg = "You must use one of these commands:", ', '.join(command.keys())
+        logger.error(msg)
         exit(1)
     command[parsed_args.command](parsed_args)
-        
+
 if __name__ == '__main__':
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger
+    logger = logging.getLogger('FS3E')
+    logger.setLevel(logging.INFO)
     main()
