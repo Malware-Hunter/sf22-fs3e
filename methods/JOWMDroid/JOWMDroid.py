@@ -14,6 +14,7 @@ import argparse
 import sys
 import inspect
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
+import logging
 
 def parse_args():
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
@@ -47,6 +48,7 @@ def get_weights_from_classifiers(X, y,
                                  weights_attributes=[
                                      'coef_', 'feature_importances_'],
                                  train_size=0.8, random_state=1):
+    global logger_jowmdroid
     X_train, _, y_train, _ = train_test_split(
         X, y, train_size=train_size, random_state=random_state)
     weights_list = []
@@ -63,7 +65,7 @@ def get_weights_from_classifiers(X, y,
                 is_found = True
                 break
         if(not is_found):
-            print(
+            logger_jowmdroid.warning(
                 f"Vetor de pesos para o classificador {classifier.__class__.__name__} não foi encontrado. Verifique o parametro weights_attributes")
     return weights_list
 
@@ -130,8 +132,9 @@ def run_jowmdroid(X, y, weight_classifiers, evaluation_classifiers, mapping_func
                   popsize=40, maxiter=30, recombination=0.3, disp=False, mutation=0.5, seed=1,
                   cv=5, scoring=["accuracy", "precision", "recall", "f1"],
                   include_hyperparameter=True):
+    global logger_jowmdroid
     inspect_frame(inspect.currentframe())
-    print('Calculando initial_weights...')
+    logger_jowmdroid.info('Calculando initial_weights...')
     initial_weights = get_normalized_weights_average(
         get_weights_from_classifiers(X, y, weight_classifiers))
     X_train, X_test, y_train, y_test = train_test_split(
@@ -139,7 +142,7 @@ def run_jowmdroid(X, y, weight_classifiers, evaluation_classifiers, mapping_func
     solutions = {}
     for classifier in evaluation_classifiers:
         solutions[classifier['name']] = {}
-        print('Otimizando parâmetros com o DE. Classificador: ', classifier['name'])
+        logger_jowmdroid.info('Otimizando parâmetros com o DE. Classificador: ' + classifier['name'])
         for mapping_function in mapping_functions:
             bounds = mapping_function.bounds + [classifier['bound']] if include_hyperparameter == True and (
                 'parameter_name' in classifier or 'bound' in classifier) else mapping_function.bounds
@@ -150,11 +153,11 @@ def run_jowmdroid(X, y, weight_classifiers, evaluation_classifiers, mapping_func
                                               popsize=popsize, maxiter=maxiter, recombination=recombination,
                                               disp=disp, mutation=mutation, seed=seed).x
             solutions[classifier['name']][mapping_function.__name__] = solution
-        print(
+        logger_jowmdroid.info(
             f"Melhores parâmetros das funções de mapeamento para o classificador {classifier['name']}: {solutions}")
     results = []
     for classifier in evaluation_classifiers:
-        print('Avaliando o classificador ', classifier['name'])
+        logger_jowmdroid.info('Avaliando o classificador ' + classifier['name'])
         for mapping_function_name, solution in solutions[classifier['name']].items():
             optimized_classifier = classifier['model'].set_params(
                 **{classifier['parameter_name']: solution[-1]}) if 'parameter_name' in classifier else classifier['model']
@@ -174,20 +177,26 @@ def inspect_frame(frame):
         print(f'{i} = {values[i]}')
 
 if __name__ == "__main__":
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_jowmdroid
+    logger_jowmdroid = logging.getLogger('JOWMDroid')
+    logger_jowmdroid.setLevel(logging.INFO)
+
     parsed_args = parse_args()
+
     X, y = get_X_y(parsed_args, get_dataset(parsed_args))
     init_size = X.shape[1]
     start_time = timeit.default_timer()
     X = select_features_with_mi(X, y, threshold=parsed_args.mi_threshold)
     end_time = timeit.default_timer()
-    print("Elapsed Time:", end_time - start_time)
+    logger_jowmdroid.info("Elapsed Time: {}".format(end_time - start_time))
     if(X.shape[1] == 0):
-        print("AVISO: 0 features selecionadas")
+        logger_jowmdroid.warning("AVISO: 0 features selecionadas")
     features_dataset = X
     features_dataset['class'] = y
     features_dataset.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix), index = False)
     if(parsed_args.feature_selection_only):
-        print("Selected Features >>", features_dataset.shape[1]-1, "of", init_size)
+        logger_jowmdroid.info("Selected Features >> %s of %s" % (features_dataset.shape[1]-1, init_size))
         exit(0)
 
     weight_classifiers = {"SVM": SVC(
