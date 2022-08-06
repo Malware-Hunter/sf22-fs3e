@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_validate
 from methods.utils import get_dataset, get_base_parser, get_X_y, get_filename
+import logging
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
@@ -33,12 +34,18 @@ def cross_validation(model, X, y, n_folds = 10, metrics=['accuracy', 'precision'
     return metrics_results
 
 if __name__=="__main__":
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_eval
+    logger_eval = logging.getLogger('EVALUATION')
+    logger_eval.setLevel(logging.INFO)
+
     args = parse_args(sys.argv[1:])
     X, y = get_X_y(args, get_dataset(args))
 
     classifiers = get_classifiers(args.model)
     results = []
-    
+
     for classifier_name, clf in classifiers.items():
+        logger_eval.info('Running Evaluation With %s' % classifier_name.upper())
         results.append({**cross_validation(clf, X, y, args.n_folds), "model": classifier_name})
     pd.DataFrame(results).to_csv(get_filename(args.output_file, prefix=args.output_prefix), index = False)

@@ -15,7 +15,7 @@ def create_executable(program_name):
         process = await asyncio.create_subprocess_exec('/bin/bash', program_name, *args)
         await process.wait()
         if(process.returncode != 0):
-            msg = f"WARN: program '{program_name}' called with args '{' '.join(args)}' returned with error"
+            msg = f"Program '{program_name}' called with args '{' '.join(args)}' returned with error"
             logger.warning(msg)
         return program_name, args
     return executable
