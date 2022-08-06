@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from argparse import ArgumentParser
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 import time
+import logging
 
 def parse_args(argv):
     parser = ArgumentParser(parents=[get_base_parser()])
@@ -36,7 +37,7 @@ def LinearR():
         y_train, y_test = y[train_index], y[test_index]
 
         model = LinearRegression()
-        model.fit(X_train, y_train)                          
+        model.fit(X_train, y_train)
         coef_in = model.coef_
         ft_to_delete = FilterFeatures(features_names, coef_in)
         fold_ft_num.append(len(ft_to_delete))
@@ -70,6 +71,11 @@ def NewDataset():
     return df2
 
 if __name__=="__main__":
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_lr
+    logger_lr = logging.getLogger('LinearRegression')
+    logger_lr.setLevel(logging.INFO)
+
     args = parse_args(sys.argv[1:])
     X, y = get_X_y(args, get_dataset(args))
 
@@ -80,15 +86,14 @@ if __name__=="__main__":
     fold_ft_to_delete = []
 
     # CHAMADA DAS FUNÇÕES
-    print("SETANDO KFOLDS EM 10\n")
+    logger_lr.info("SETANDO KFOLDS EM 10")
     KFolders()
     time.sleep(3)
-    print("APLICANDO A REGRESSÃO LINEAR\n")
+    logger_lr.info("APLICANDO A REGRESSÃO LINEAR")
     LinearR()
     MaxValue()
     time.sleep(3)
-    print("GERANDO NOVO DATASET...\n")
-   
+    logger_lr.info("GERANDO NOVO DATASET...")
+
     NewDataset().to_csv(get_filename(args.output_file, prefix=args.output_prefix), index=False)
-    print("DATASET GERADO COM SUCESSO\n")
-    
+    logger_lr.info("DATASET GERADO COM SUCESSO")
