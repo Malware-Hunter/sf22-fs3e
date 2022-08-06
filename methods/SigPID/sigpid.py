@@ -12,7 +12,8 @@ from mlxtend.frequent_patterns import apriori, association_rules
 from mlxtend.preprocessing import TransactionEncoder
 from methods.SigPID.spinner import Spinner
 from methods.utils import get_base_parser, get_dataset, get_filename
-
+import logging
+from tqdm import tqdm
 
 B = None
 M = None
@@ -92,14 +93,16 @@ def SVM(dataset_df, class_column):
     return elapsed_time, accuracy, precision, recall, f1_score, fpr
 
 def run_PMAR(dataset, prnr_malware, class_column):
+    global logger_sigpid
     features_name = dataset.columns.values.tolist()
     class_apk = dataset[class_column]
     features_dataset = dataset.drop([class_column], axis=1)
     num_apk = features_dataset.shape[0] - 1
     num_features = features_dataset.shape[1]
 
-    spn = Spinner("Mining Association Rules")
-    spn.start()
+    logger_sigpid.info("Mining Association Rules")
+    #spn = Spinner("Mining Association Rules")
+    #spn.start()
     records = []
     for i in range(0,num_apk):
         if class_apk[i] in [0, 1]:
@@ -118,13 +121,13 @@ def run_PMAR(dataset, prnr_malware, class_column):
                         min_support = 0.1,
                         use_colnames = True,
                         max_len = 2,
-                        verbose = 1)
+                        verbose = 0)
     if not freq_items.empty:
         rules = association_rules(freq_items, metric="confidence", min_threshold=0.965)
     else:
         rules = []
     #rules = rules[['antecedents', 'consequents', 'support','confidence']]
-    spn.stop()
+    #spn.stop()
     PMAR_df = dataset
     deleted_ft = []
     for i in range(0,len(rules)):
@@ -135,7 +138,7 @@ def run_PMAR(dataset, prnr_malware, class_column):
         #print(ant, rank_ant, con, rank_con)
         to_delete = ant if rank_ant < rank_con else con
         if to_delete not in deleted_ft:
-            print(to_delete)
+            #print(to_delete)
             PMAR_df = PMAR_df.drop([to_delete], axis=1)
             deleted_ft.append(to_delete)
 
@@ -175,13 +178,19 @@ def drop_internet(dataset):
     return ds
 
 if __name__=="__main__":
+
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_sigpid
+    logger_sigpid = logging.getLogger('SigPID')
+    logger_sigpid.setLevel(logging.INFO)
+
     check_dirs()
     args = parse_args(sys.argv[1:])
 
     try:
         initial_dataset = get_dataset(args)
     except BaseException as e:
-        print('Exception: {}'.format(e))
+        logger_sigpid.exception(e)
         exit(1)
 
     dataset = drop_internet(initial_dataset)
@@ -196,8 +205,9 @@ if __name__=="__main__":
 
     num_permissions = dataset.shape[1] - 1 #CLASS
 
-    spn = Spinner('PRNR Generating Subset of Permissions')
-    spn.start()
+    logger_sigpid.info('PRNR Generating Subset of Permissions')
+    #spn = Spinner('PRNR Generating Subset of Permissions')
+    #spn.start()
     counter = increment = 3
     while counter < num_permissions/2 + increment:
         malwares_head_perms = malwares_permissions['permission'].head(counter).values
@@ -211,7 +221,7 @@ if __name__=="__main__":
         evaluated_ft = num_permissions if evaluated_ft > num_permissions else evaluated_ft
         subset.to_csv("MLDP/PRNR/subset_" + str(evaluated_ft) + ".csv", index = False)
         counter += increment
-    spn.stop()
+    #spn.stop()
 
     counter = increment = 6
     best_PRNR_accuracy = 0.0
@@ -220,19 +230,24 @@ if __name__=="__main__":
     #spn.start()
     with open("MLDP/PRNR/svm_results.csv","w", newline='') as f:
         f_writer = csv.writer(f)
+        logger_sigpid.info('Running PIS + PRNR')
+        pbar = tqdm(range(num_permissions), disable = (logger_sigpid.getEffectiveLevel() > logging.INFO))
         while counter < num_permissions + increment:
             evaluated_ft = num_permissions if counter > num_permissions else counter
-            txt = "Running PIS + PRNR With {} Features".format(evaluated_ft)
-            spn = Spinner(txt)
-            spn.start()
+            pbar.set_description("With %s Features" % str(evaluated_ft))
+            pbar.n = evaluated_ft
+            #txt = "Running PIS + PRNR With {} Features".format(evaluated_ft)
+            #spn = Spinner(txt)
+            #spn.start()
             dataset_df = pd.read_csv('MLDP/PRNR/subset_' + str(evaluated_ft) + '.csv', encoding = 'utf8')
             results = list(SVM(dataset_df, args.class_column))
             if results[1] > best_PRNR_accuracy:
                 best_PRNR_accuracy = results[1]
                 best_PRNR_counter = evaluated_ft
             f_writer.writerow([evaluated_ft] + results)
-            spn.stop()
+            #spn.stop()
             counter += increment
+        pbar.close()
     #spn.stop()
     #print("PRNR:", best_PRNR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_PRNR_accuracy))
 
@@ -246,8 +261,10 @@ if __name__=="__main__":
     #calculates the support of each permission
     supp = PRNR_df.sum(axis = 0)
     supp = supp.sort_values(ascending=False)
-    spn = Spinner('SPR Generating Subset of Permissions')
-    spn.start()
+
+    logger_sigpid.info('SPR Generating Subset of Permissions')
+    #spn = Spinner('SPR Generating Subset of Permissions')
+    #spn.start()
     counter = increment = 5
     while counter < best_PRNR_counter + increment:
         subset_permissions = list(supp.head(counter).index)
@@ -258,7 +275,7 @@ if __name__=="__main__":
         evaluated_ft = best_PRNR_counter if counter > best_PRNR_counter else counter
         subset.to_csv("MLDP/SPR/subset_" + str(evaluated_ft) + ".csv", index = False)
         counter += increment
-    spn.stop()
+    #spn.stop()
 
     counter = increment = 5
     best_SPR_accuracy = best_PRNR_accuracy
@@ -267,19 +284,24 @@ if __name__=="__main__":
     #spn.start()
     with open("MLDP/SPR/svm_results.csv","w", newline='') as f:
         f_writer = csv.writer(f)
+        logger_sigpid.info('Running PIS + SPR')
+        pbar_spr = tqdm(range(best_PRNR_counter), disable = (logger_sigpid.getEffectiveLevel() > logging.INFO))
         while counter < best_PRNR_counter + increment:
             evaluated_ft = best_PRNR_counter if counter > best_PRNR_counter else counter
-            txt = "Running PIS + SPR With {} Features".format(evaluated_ft)
-            spn = Spinner(txt)
-            spn.start()
+            pbar_spr.set_description("With %s Features" % str(evaluated_ft))
+            pbar_spr.n = evaluated_ft
+            #txt = "Running PIS + SPR With {} Features".format(evaluated_ft)
+            #spn = Spinner(txt)
+            #spn.start()
             dataset_df = pd.read_csv('MLDP/SPR/subset_' + str(evaluated_ft) + '.csv', encoding = 'utf8')
             results = list(SVM(dataset_df, args.class_column))
             if results[1] >= 0.9 and evaluated_ft < best_SPR_counter:
                 best_SPR_accuracy = results[1]
                 best_SPR_counter = evaluated_ft
             f_writer.writerow([evaluated_ft] + results)
-            spn.stop()
+            #spn.stop()
             counter += increment
+        pbar_spr.close()
     #spn.stop()
     #print("SPR:", best_SPR_counter, "Permissions", ">>", "Accuracy ({:.3f})".format(best_SPR_accuracy))
 
@@ -294,7 +316,8 @@ if __name__=="__main__":
     final_perms = len(final_dataset.columns) - 1
     num_permissions = initial_dataset.shape[1] - 1
     pct = (1.0 - (final_perms/num_permissions)) * 100.0
-    print(num_permissions, "to", final_perms, "Permissions. Reduction of {:.3f}%".format(pct))
+    logger_sigpid.info("%s to %s Permissions. Reduction of %.2f%%" % (num_permissions, final_perms, pct))
+    #print(num_permissions, "to", final_perms, "Permissions. Reduction of {:.3f}%".format(pct))
 
 """
     #Testing Final Dataset
