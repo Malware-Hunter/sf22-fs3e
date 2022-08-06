@@ -8,25 +8,26 @@ import pandas as pd
 from argparse import ArgumentParser
 import sys
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
+import logging
 
 def parse_args(argv):
     base_parser = get_base_parser()
     parser = ArgumentParser(parents=[base_parser])
     parser.add_argument(
-        '-i', '--increment', 
+        '-i', '--increment',
         help = 'Increment. Default: 20',
-        type = int, 
+        type = int,
         default = 20)
     parser.add_argument(
         '-f',
         metavar = 'LIST',
         help = 'List of number of features to select. If provided, Increment is ignored. Usage example: -f="10,50,150,400"',
-        type = str, 
+        type = str,
         default = "")
     parser.add_argument(
         '-k', '--n-folds',
         help = 'Number of folds to use in k-fold cross validation. Default: 10.',
-        type = int, 
+        type = int,
         default = 10)
     parser.add_argument('--feature-selection-only', action='store_true',
         help="If set, the experiment is constrained to the feature selection phase only. The program always returns the best K features, where K is the maximum value in the features list.")
@@ -34,15 +35,16 @@ def parse_args(argv):
     return args
 
 def run_experiment(X, y, classifiers, is_feature_selection_only = False,
-                   score_functions=[chi2, f_classif], 
+                   score_functions=[chi2, f_classif],
                    n_folds=10,
                    k_increment=20,
                    k_list=[]):
     """
-    Esta função implementa um experimento de classificação binária usando validação cruzada e seleção de características. 
+    Esta função implementa um experimento de classificação binária usando validação cruzada e seleção de características.
     Os "classifiers" devem implementar as funções "fit" e "predict", como as funções do Scikit-learn.
-    Se o parâmetro "k_list" for uma lista não vazia, então ele será usado como a lista das quantidades de características a serem selecionadas. 
+    Se o parâmetro "k_list" for uma lista não vazia, então ele será usado como a lista das quantidades de características a serem selecionadas.
     """
+    global logger_rfg
     results = []
     feature_rankings = {}
     if(len(k_list) > 0):
@@ -51,11 +53,12 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
         k_values = range(1, X.shape[1], k_increment)
     for k in k_values:
         if(k > X.shape[1]):
-            print(f"Warning: skipping K = {k}, since it's greater than the number of features available ({X.shape[1]})")
+            logger_rfg.warning(f"Skipping K = {k}, since it's greater than the number of features available ({X.shape[1]})")
             continue
-        print("K =", k)
+
+        logger_rfg.info("K = %s" % k)
         for score_function in score_functions:
-            if(k == max(k_values)): 
+            if(k == max(k_values)):
                 selector = SelectKBest(score_func=score_function, k=k).fit(X, y)
                 X_selected = X.iloc[:, selector.get_support(indices=True)].copy()
                 feature_scores_sorted = pd.DataFrame(list(zip(X_selected.columns.values.tolist(), selector.scores_)), columns= ['features','score']).sort_values(by = ['score'], ascending=False)
@@ -63,7 +66,7 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
                 X_selected_sorted['class'] = y
                 feature_rankings[score_function.__name__] = X_selected_sorted
                 if(X_selected.shape[1] == 1):
-                    print("AVISO: 0 features selecionadas")
+                    logger_rfg.warning("Nenhuma caracteristica selecionada")
             if(is_feature_selection_only):
                 continue
             X_selected = SelectKBest(score_func=score_function, k=k).fit_transform(X, y)
@@ -72,7 +75,7 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
             for train_index, test_index in kf.split(X_selected):
                 X_train, X_test = X_selected[train_index], X_selected[test_index]
                 y_train, y_test = y[train_index], y[test_index]
-                
+
                 for classifier_name, classifier in classifiers.items():
                     classifier.fit(X_train, y_train)
                     y_pred = classifier.predict(X_test)
@@ -82,12 +85,12 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
                                     'score_function':score_function.__name__,
                                     'algorithm': classifier_name,
                                     'accuracy': report['accuracy'],
-                                    'precision': report['macro avg']['precision'], 
+                                    'precision': report['macro avg']['precision'],
                                     'recall': report['macro avg']['recall'],
                                     'f-measure': report['macro avg']['f1-score']
                                 })
                 fold += 1
-            
+
     return pd.DataFrame(results), feature_rankings
 
 def get_best_result(results, threshold=0.95):
@@ -107,7 +110,8 @@ def get_best_features_dataset(best_result, feature_rankings, class_column):
 
     return X_selected
 
-def main():    
+def main():
+    global logger_rfg
     parsed_args = parse_args(sys.argv[1:])
     X, y = get_X_y(parsed_args, get_dataset(parsed_args))
     k_list = [int(value) for value in parsed_args.f.split(",")] if parsed_args.f != "" else []
@@ -116,17 +120,23 @@ def main():
         'RandomForest': RandomForestClassifier(),
     }
 
+    logger_rfg.info("Executando experimento")
     results, feature_rankings = run_experiment(
-        X, y, 
-        classifiers, 
-        n_folds = parsed_args.n_folds, 
-        k_increment = parsed_args.increment, 
-        k_list=k_list, 
+        X, y,
+        classifiers,
+        n_folds = parsed_args.n_folds,
+        k_increment = parsed_args.increment,
+        k_list=k_list,
         is_feature_selection_only=parsed_args.feature_selection_only
     )
 
     filename = get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix)
+    logger_rfg.info("Selecionando as melhores caracteristicas")
     get_best_features_dataset(get_best_result(results), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
 
 if __name__ == '__main__':
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_rfg
+    logger_rfg = logging.getLogger('RFG')
+    logger_rfg.setLevel(logging.INFO)
     main()
