@@ -16,16 +16,18 @@ import sys
 from random import choice
 from argparse import ArgumentParser
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
+import logging
 
 def correlation_phase(X, y, k, method, methods):
+    global logger_sigapi
     feature_scores = methods[method]['function'](X, y, k)
     new_X = X[list(feature_scores['features'])]
-    
+
     correlation = new_X.corr()
-    
+
     model_RF=RandomForestClassifier()
     model_RF.fit(new_X,y)
-    
+
     feats = {}
     for feature, importance in zip(new_X.columns, model_RF.feature_importances_):
         feats[feature] = importance
@@ -37,7 +39,7 @@ def correlation_phase(X, y, k, method, methods):
             if index != column and correlation.loc[index, column] > 0.85:
                ft = column if feats[column] <= feats[index] else index
                to_drop.add(ft)
-    print("qtd de features removidas:", len(to_drop))
+    logger_sigapi.info("qtd de features removidas:", len(to_drop))
 
     new_X = new_X.drop(columns = to_drop)
     new_X['class'] = y
@@ -159,12 +161,13 @@ def is_method_stable(previous_metrics, current_metrics, t=0.03):
     return False
 
 def selection_phase(X, y, methods, num_features=1, increment=1):
+    global logger_sigapi
     has_found_stable_method = False
     best_stable_method = None
     best_metric_value = 0
     while num_features < (total_features + increment) and not has_found_stable_method:
         k = total_features if num_features > total_features else num_features
-        print("qtd de features: ", k)
+        logger_sigapi.info("qtd de features: %s" % k)
 
         for method_name in methods.keys():
             feature_scores = methods[method_name]['function'](X, y, k)
@@ -173,8 +176,8 @@ def selection_phase(X, y, methods, num_features=1, increment=1):
             methods[method_name]['results'] = np.append(methods[method_name]['results'],[[k,metrics[0],metrics[1],metrics[2],metrics[3]]],axis=0)
             previous_metrics = methods[method_name]['results'][-2][1:]
             current_metrics = methods[method_name]['results'][-1][1:]
-            
-            # A primeira expressão booleana (len(...) > 2) é para evitar comparar as métricas calculadas contra o vetor [0,0,0,0], 
+
+            # A primeira expressão booleana (len(...) > 2) é para evitar comparar as métricas calculadas contra o vetor [0,0,0,0],
             # que é definido inicialmente no dicionário "methods"
             if(len(methods[method_name]['results']) > 2 and is_method_stable(previous_metrics, current_metrics, parsed_args.threshold)):
                 has_found_stable_method = True
@@ -183,25 +186,30 @@ def selection_phase(X, y, methods, num_features=1, increment=1):
                     best_metric_value = accuracy
                     best_stable_method = method_name
         num_features += increment
-    
+
     if(not has_found_stable_method):
         best_stable_method = choice(list(methods.keys()))
-    
+
     k = int(methods[best_stable_method]["results"][-1][0])
     return best_stable_method, k
 
 if __name__=="__main__":
+    logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
+    global logger_sigapi
+    logger_sigapi = logging.getLogger('SigAPI')
+    logger_sigapi.setLevel(logging.INFO)
+
     parsed_args = parse_args(sys.argv[1:])
     X, y = get_X_y(parsed_args, get_dataset(parsed_args))
     total_features = get_dataset(parsed_args).shape[1] - 1
     if(parsed_args.initial_n_features > total_features):
-        print(f"ERRO: --initial-n-features ({parsed_args.initial_n_features}) maior que a qtd de features do dataset ({total_features})")
+        logger_sigapi.error(f"--initial-n-features ({parsed_args.initial_n_features}) maior que a qtd de features do dataset ({total_features})")
         exit(1)
-    print("INÍCIO DA SELEÇÃO DE FEATURES")
+    logger_sigapi.info("INÍCIO DA SELEÇÃO DE FEATURES")
     best_stable_method, lower_bound = selection_phase(X, y, methods, num_features=parsed_args.initial_n_features, increment=parsed_args.increment)
-    print("SUGESTÃO DE LIMITE PARA A FASE DE CORRELAÇÃO")
-    print(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
-    print("INICIO DA CORRELAÇÃO")
+    logger_sigapi.info("SUGESTÃO DE LIMITE PARA A FASE DE CORRELAÇÃO")
+    logger_sigapi.info(f'Menor limite inferior encontrado: {best_stable_method}, {lower_bound}')
+    logger_sigapi.info("INICIO DA CORRELAÇÃO")
     new_X = correlation_phase(X, y, lower_bound, best_stable_method, methods)
     new_X.to_csv(get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix), index=False)
-    print("Dataset final criado")
+    logger_sigapi.info("Dataset final criado")
