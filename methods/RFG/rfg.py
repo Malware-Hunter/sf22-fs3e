@@ -10,6 +10,8 @@ import sys
 from methods.utils import get_base_parser, get_dataset, get_X_y, get_filename
 import logging
 
+heuristic_metrics = ['precision', 'accuracy', 'recall', 'f-measure']
+
 def parse_args(argv):
     base_parser = get_base_parser()
     parser = ArgumentParser(parents=[base_parser])
@@ -29,6 +31,16 @@ def parse_args(argv):
         help = 'Number of folds to use in k-fold cross validation. Default: 10.',
         type = int,
         default = 10)
+    parser.add_argument(
+        '-t', '--threshold',
+        help = 'Threshold to choose the best dataset of selected features based on --heuristic-metric. Default: 0.95.',
+        type = float,
+        default = 0.95)
+    parser.add_argument(
+        '-m', '--heuristic-metric',
+        help = f"Metric to base the choice of the best dataset of selected features. Options: {','.join(heuristic_metrics)}. Default: 'recall'.",
+        choices=heuristic_metrics,
+        default = 'recall')
     parser.add_argument('--feature-selection-only', action='store_true',
         help="If set, the experiment is constrained to the feature selection phase only. The program always returns the best K features, where K is the maximum value in the features list.")
     args = parser.parse_args(argv)
@@ -93,22 +105,14 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
 
     return pd.DataFrame(results), feature_rankings
 
-def get_best_result(results, threshold=0.95):
+def get_best_result(results, threshold=0.95, heuristic_metric='recall'):
     averages = results.groupby(['k','score_function']).mean().drop(columns=['n_fold'])
     maximun_score = max(averages.max())
 
-    flag = True
-    best_result = None
-    th = threshold
-    step = 0.01
-    while flag:
-        for k, score_function in averages.index:
-            if(all([score > (th * maximun_score) for score in averages.loc[(k, score_function)]])):
-                best_result =  (k, score_function)
-                flag = False
-            else:
-                th -= step
-    return best_result
+    for k, score_function in averages.index:
+        if(averages.loc[(k, score_function)][heuristic_metric] > threshold * maximun_score):
+            return (k, score_function)
+    logger_rfg.error("Não foi possível encontrar o dataset de características selecionadas, tente novamente variando o --heuristic_metric e/ou --threshold")
 
 def get_best_features_dataset(best_result, feature_rankings, class_column):
     k, score_function = best_result
@@ -141,7 +145,7 @@ def main():
 
     filename = get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix)
     logger_rfg.info("Selecionando as melhores caracteristicas")
-    get_best_features_dataset(get_best_result(results), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
+    get_best_features_dataset(get_best_result(results, parsed_args.threshold, parsed_args.heuristic_metric), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
 
 if __name__ == '__main__':
     logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
