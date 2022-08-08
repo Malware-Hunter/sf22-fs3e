@@ -114,7 +114,7 @@ def graph_class(df, filename, output_prefix):
     ax.set_ylim(-1, len(models_index))
     ax.legend(ncol = len(classification_list), loc = 'upper center')
     for container in ax.containers:
-        if container.datavalues[0] > 1.0:
+        if container.datavalues[0] > 2.5:
             ax.bar_label(container, label_type = 'center', color = 'black', weight='bold', fmt = '%.2f')
     ax.set_title(f'Classification to {current_method} with dataset {current_dataset}')
     path_graph_file = f"{output_prefix}_class_of_{filename.replace('.csv', '')}.png"
@@ -123,7 +123,6 @@ def plot_results(all_ml_results_filenames, chosen_methods, chosen_models, output
     chosen_results_filenames = [results_filename for results_filename in all_ml_results_filenames if re.search('|'.join(chosen_methods), results_filename)]
     for filename in chosen_results_filenames:
         df = pd.read_csv(filename)
-        print(df)
         graph_metrics(df, filename, output_prefix)
         graph_class(df, filename, output_prefix)
         '''
