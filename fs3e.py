@@ -122,26 +122,9 @@ def graph_class(df, filename, output_prefix):
 def plot_results(all_ml_results_filenames, chosen_methods, chosen_models, output_prefix):
     chosen_results_filenames = [results_filename for results_filename in all_ml_results_filenames if re.search('|'.join(chosen_methods), results_filename)]
     for filename in chosen_results_filenames:
-        df = pd.read_csv(filename)
+        df = df[df['model'].isin(chosen_models)]
         graph_metrics(df, filename, output_prefix)
         graph_class(df, filename, output_prefix)
-        '''
-        df_with_chosen_models = df[df['model'].isin(chosen_models)]
-
-        results_to_plot = df_with_chosen_models.melt(id_vars=['model'])
-        results_to_plot = results_to_plot.rename(columns={'variable': 'metric'})
-        sns.set_palette("colorblind")
-        g = sns.barplot(data=results_to_plot, x='model', y='value', hue='metric')
-
-        current_method = filename.split('_')[-3]
-        current_dataset = filename.split('_')[-2]
-        g.set_title(f'Results for {current_method} with dataset {current_dataset}')
-        g.set_ylabel('Value (%)')
-        g.set_xlabel('Model')
-        figure = g.get_figure()
-        figure.savefig(f"{output_prefix}_plot_of_{filename.replace('.csv', '')}.png", dpi=300)
-        figure.clf()
-        '''
 async def run_command(parsed_args):
     chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
     await run_fs_methods(parsed_args.output_prefix, chosen_methods, parsed_args.datasets)
