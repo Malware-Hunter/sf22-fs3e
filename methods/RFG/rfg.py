@@ -37,6 +37,11 @@ def parse_args(argv):
         type = float,
         default = 0.95)
     parser.add_argument(
+        '-s', '--decrement-step',
+        help = "If the heuristic couldn't find't the dataset of features selected, try again decreasing the threshold by this amount. Default: 0.05.",
+        type = float,
+        default = 0.05)
+    parser.add_argument(
         '-m', '--heuristic-metric',
         help = f"Metric to base the choice of the best dataset of selected features. Options: {','.join(heuristic_metrics)}. Default: 'recall'.",
         choices=heuristic_metrics,
@@ -105,13 +110,16 @@ def run_experiment(X, y, classifiers, is_feature_selection_only = False,
 
     return pd.DataFrame(results), feature_rankings
 
-def get_best_result(results, threshold=0.95, heuristic_metric='recall'):
+def get_best_result(results, threshold=0.95, heuristic_metric='recall', decrement_step=0.05):
     averages = results.groupby(['k','score_function']).mean().drop(columns=['n_fold'])
     maximun_score = max(averages.max())
+    th = threshold
+    while th > 0:
+        for k, score_function in averages.index:
+            if(averages.loc[(k, score_function)][heuristic_metric] > th * maximun_score):
+                return (k, score_function)
+        th -= decrement_step
 
-    for k, score_function in averages.index:
-        if(averages.loc[(k, score_function)][heuristic_metric] > threshold * maximun_score):
-            return (k, score_function)
     logger_rfg.error("Não foi possível encontrar o dataset de características selecionadas, tente novamente variando o --heuristic_metric e/ou --threshold")
 
 def get_best_features_dataset(best_result, feature_rankings, class_column):
@@ -145,7 +153,7 @@ def main():
 
     filename = get_filename(parsed_args.output_file, prefix=parsed_args.output_prefix)
     logger_rfg.info("Selecionando as melhores caracteristicas")
-    get_best_features_dataset(get_best_result(results, parsed_args.threshold, parsed_args.heuristic_metric), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
+    get_best_features_dataset(get_best_result(results, parsed_args.threshold, parsed_args.heuristic_metric, parsed_args.decrement_step), feature_rankings, parsed_args.class_column).to_csv(filename, index=False)
 
 if __name__ == '__main__':
     logging.basicConfig(format = '%(name)s - %(levelname)s - %(message)s')
