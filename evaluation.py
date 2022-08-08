@@ -3,9 +3,11 @@ import sys
 import argparse
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, cross_val_predict
 from methods.utils import get_dataset, get_base_parser, get_X_y, get_filename
 import logging
+from sklearn import metrics as skmetrics
+from sklearn.metrics import confusion_matrix
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(parents=[get_base_parser()])
@@ -27,10 +29,23 @@ def get_classifiers(classifier_name):
     return {'svm': svm.SVC(), 'rf': RandomForestClassifier(random_state = 0)}
 
 def cross_validation(model, X, y, n_folds = 10, metrics=['accuracy', 'precision', 'recall', 'f1', 'roc_auc']):
-    results = cross_validate(estimator=model, X=X, y=y, cv=n_folds, scoring=metrics)
+    #results = cross_validate(estimator=model, X=X, y=y, cv=n_folds, scoring=metrics)
+    y_pred = cross_val_predict(estimator=model, X=X, y=y, cv=n_folds)
+
     metrics_results = {}
-    for metric in metrics:
-        metrics_results[metric] = results[f'test_{metric}'].mean() * 100
+    #for metric in metrics:
+    #    metrics_results[metric] = results[f'test_{metric}'].mean() * 100
+
+    tn, fp, fn, tp = confusion_matrix(y, y_pred).ravel()
+    metrics_results['tn'] = tn
+    metrics_results['fp'] = fp
+    metrics_results['fn'] = fn
+    metrics_results['tp'] = fp
+    metrics_results['accuracy'] = skmetrics.accuracy_score(y, y_pred)
+    metrics_results['precision'] = skmetrics.precision_score(y, y_pred, zero_division = 0)
+    metrics_results['recall'] = skmetrics.recall_score(y, y_pred, zero_division = 0)
+    metrics_results['f1'] = skmetrics.f1_score(y, y_pred, zero_division = 0)
+    metrics_results['roc_auc'] = skmetrics.roc_auc_score(y, y_pred)
     return metrics_results
 
 if __name__=="__main__":

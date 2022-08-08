@@ -8,6 +8,7 @@ import pandas as pd
 import re
 import seaborn as sns
 import logging
+import os
 
 def create_executable(program_name):
     async def executable(*args):
@@ -56,7 +57,7 @@ def parse_args():
     run_parser.add_argument(f'--output-prefix', help="Prefix of output file names. Should not be an empty string. Default: 'results'", default='results')
     run_parser.add_argument(f'--plot-fs-methods', help=f'Feature selection methods to plot. Default: all', choices=list(fs_methods.keys()) + ['all'], nargs='*', default='all')
     run_parser.add_argument(f'--plot-ml-models', help=f'Machine learning model to plot. Default: all', choices=ml_models + ['all'], default='all', nargs='*')
-
+    #run_parser.add_argument(f'--output-dir', metavar = 'DIRECTORY', help = f'Directory For Output Data. Default: outputs', type = str, default = 'outputs')
     args = parser.parse_args(sys.argv[1:])
     return args
 
@@ -74,11 +75,58 @@ async def run_ml_model(output_prefix, model, datasets):
     model_executable = create_executable('run_evaluation.sh')
     await model_executable(output_prefix, model, ' '.join(datasets))
 
+def graph_metrics(df, filename, output_prefix):
+    current_method = filename.split('_')[-3]
+    current_dataset = filename.split('_')[-2]
+    models_index = list(df['model'].str.upper())
+    metrics_dict = dict()
+    metrics_list = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
+    for metric in metrics_list:
+        metrics_dict[metric] = list(df[metric] * 100.0)
 
+    df = pd.DataFrame(metrics_dict, index = models_index)
+    df.columns = ['Accuracy', 'Precision', 'Recall', 'F1_Score', 'ROC_AuC']
+    ax = df.plot.bar(rot = 0, edgecolor='white', linewidth = 1)
+    ax.set_xlabel('Model')
+    ax.set_ylabel('Values (%)')
+    ax.legend(ncol = 1, loc = 'lower left')
+    ax.set_ylim(0, 100)
+    ax.set_xlim(-1, len(models_index))
+    ax.set_title(f'Results for {current_method} with dataset {current_dataset}')
+    path_graph_file = f"{output_prefix}_metrics_of_{filename.replace('.csv', '')}.png"
+    ax.figure.savefig(path_graph_file, dpi = 300)
+
+
+def graph_class(df, filename, output_prefix):
+    current_method = filename.split('_')[-3]
+    current_dataset = filename.split('_')[-2]
+    models_index = list(df['model'].str.upper())
+    classification_dict = dict()
+    classification_list = ['TP', 'FP', 'TN', 'FN']
+    for classification in classification_list:
+        classification_dict[classification] = list(df[classification.lower()])
+
+    df = pd.DataFrame(classification_dict, index = models_index)
+    stacked_data = df.apply(lambda x: x*100/sum(x), axis = 1)
+    ax = stacked_data.plot.barh(rot = 0, stacked = True)
+    ax.set_xlabel('Values (%)')
+    ax.set_ylabel('Model')
+    ax.set_ylim(-1, len(models_index))
+    ax.legend(ncol = len(classification_list), loc = 'upper center')
+    for container in ax.containers:
+        if container.datavalues[0] > 1.0:
+            ax.bar_label(container, label_type = 'center', color = 'black', weight='bold', fmt = '%.2f')
+    ax.set_title(f'Classification to {current_method} with dataset {current_dataset}')
+    path_graph_file = f"{output_prefix}_class_of_{filename.replace('.csv', '')}.png"
+    ax.figure.savefig(path_graph_file, dpi = 300)
 def plot_results(all_ml_results_filenames, chosen_methods, chosen_models, output_prefix):
     chosen_results_filenames = [results_filename for results_filename in all_ml_results_filenames if re.search('|'.join(chosen_methods), results_filename)]
     for filename in chosen_results_filenames:
         df = pd.read_csv(filename)
+        print(df)
+        graph_metrics(df, filename, output_prefix)
+        graph_class(df, filename, output_prefix)
+        '''
         df_with_chosen_models = df[df['model'].isin(chosen_models)]
 
         results_to_plot = df_with_chosen_models.melt(id_vars=['model'])
@@ -94,7 +142,7 @@ def plot_results(all_ml_results_filenames, chosen_methods, chosen_models, output
         figure = g.get_figure()
         figure.savefig(f"{output_prefix}_plot_of_{filename.replace('.csv', '')}.png", dpi=300)
         figure.clf()
-
+        '''
 async def run_command(parsed_args):
     chosen_methods = list(fs_methods.keys()) if 'all' in parsed_args.fs_methods else parsed_args.fs_methods
     await run_fs_methods(parsed_args.output_prefix, chosen_methods, parsed_args.datasets)

@@ -97,9 +97,18 @@ def get_best_result(results, threshold=0.95):
     averages = results.groupby(['k','score_function']).mean().drop(columns=['n_fold'])
     maximun_score = max(averages.max())
 
-    for k, score_function in averages.index:
-        if(all([score > threshold * maximun_score for score in averages.loc[(k, score_function)]])):
-            return (k, score_function)
+    flag = True
+    best_result = None
+    th = threshold
+    step = 0.01
+    while flag:
+        for k, score_function in averages.index:
+            if(all([score > (th * maximun_score) for score in averages.loc[(k, score_function)]])):
+                best_result =  (k, score_function)
+                flag = False
+            else:
+                th -= step
+    return best_result
 
 def get_best_features_dataset(best_result, feature_rankings, class_column):
     k, score_function = best_result
